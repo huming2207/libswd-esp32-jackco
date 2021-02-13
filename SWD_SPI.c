@@ -200,16 +200,58 @@ extern int libswd_drv_miso_trn(libswd_ctx_t *libswdctx, int clks) {
 }
 
 #include "esp_log.h"
+#define TAG "libswd"
 extern int libswd_log(libswd_ctx_t *libswdctx, libswd_loglevel_t loglevel, char *msg, ...) {
-    // va_list args;
-    // va_start (args, msg);
+    va_list args;
+    va_start (args, msg);
 
-    // char buffer[256];
-    // int length = 0;
-    // length = vsnprintf (buffer, 255, msg, args);
-    // buffer[length] = '\0';
-    // ESP_LOGE("SWD_SPI", "%s", buffer);
-    // va_end (args);
+    char buffer[256];
+    int length = 0;
+    length = vsnprintf (buffer, 255, msg, args);
+    buffer[length] = '\0';
+
+    switch (loglevel) {
+        case LIBSWD_LOGLEVEL_DEBUG: {
+            ESP_LOGD(TAG, "%s", buffer);
+            break;
+        }
+
+        case LIBSWD_LOGLEVEL_MIN: {
+            break;
+        }
+
+        case LIBSWD_LOGLEVEL_NORMAL: {
+            ESP_LOGI(TAG, "%s", buffer);
+            break;
+        }
+
+        case LIBSWD_LOGLEVEL_ERROR: {
+            ESP_LOGE(TAG, "%s", buffer);
+            break;
+        }
+
+        case LIBSWD_LOGLEVEL_WARNING: {
+            ESP_LOGW(TAG, "%s", buffer);
+            break;
+        }
+
+        case LIBSWD_LOGLEVEL_INFO: {
+            ESP_LOGI(TAG, "%s", buffer);
+            break;
+        }
+
+        case LIBSWD_LOGLEVEL_PAYLOAD: {
+            ESP_LOGD(TAG, "%s", buffer);
+            break;
+        }
+
+        default: {
+            break;
+        }
+    }
+
+    va_end (args);
+
     return LIBSWD_OK;
 }
 
