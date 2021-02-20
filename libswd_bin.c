@@ -47,13 +47,14 @@
  * \param *parity resulting data pointer.
  * \return negative value on error, 0 or 1 as parity result.
  */
-int libswd_bin8_parity_even(char *data, char *parity){
- char i;
- unsigned char test=*data;
- *parity=0;
- for (i=0;i<=8;i++) *parity ^= ((test>>i)&1);
- if (*parity<0 || *parity>1) return LIBSWD_ERROR_PARITY;
- return (int)*parity;
+int libswd_bin8_parity_even(char *data, char *parity)
+{
+    char i;
+    unsigned char test = *data;
+    *parity = 0;
+    for (i = 0; i <= 8; i++) *parity ^= ((test >> i) & 1);
+    if (*parity < 0 || *parity > 1) return LIBSWD_ERROR_PARITY;
+    return (int) *parity;
 }
 
 /**
@@ -62,13 +63,14 @@ int libswd_bin8_parity_even(char *data, char *parity){
  * \param *parity resulting data pointer.
  * \return negative value on error, 0 or 1 as parity result.
  */
-int libswd_bin32_parity_even(int *data, char *parity){
- int i;
- unsigned int test=*data;
- *parity=0;
- for (i=0;i<32;i++) *parity ^= ((test>>i)&1);
- if (*parity<0 || *parity>1) return LIBSWD_ERROR_PARITY;
- return (int)*parity;
+int libswd_bin32_parity_even(int *data, char *parity)
+{
+    int i;
+    unsigned int test = *data;
+    *parity = 0;
+    for (i = 0; i < 32; i++) *parity ^= ((test >> i) & 1);
+    if (*parity < 0 || *parity > 1) return LIBSWD_ERROR_PARITY;
+    return (int) *parity;
 }
 
 /**
@@ -76,10 +78,11 @@ int libswd_bin32_parity_even(int *data, char *parity){
  * \param *data source data pointer.
  * \return number of characters printed.
  */
-int libswd_bin8_print(char *data){
- unsigned char i, bits=*data;
- for (i=0;i<8;i++) putchar(((bits<<i)&0x80)?'1':'0');
- return i;
+int libswd_bin8_print(char *data)
+{
+    unsigned char i, bits = *data;
+    for (i = 0; i < 8; i++) putchar(((bits << i) & 0x80) ? '1' : '0');
+    return i;
 }
 
 /**
@@ -87,10 +90,11 @@ int libswd_bin8_print(char *data){
  * \param *data source data pointer.
  * \return number of characters printed.
  */
-int libswd_bin32_print(int *data){
- unsigned int i, bits=*data;
- for (i=0;i<32;i++) putchar(((bits<<i)&0x80000000)?'1':'0');
- return i;
+int libswd_bin32_print(int *data)
+{
+    unsigned int i, bits = *data;
+    for (i = 0; i < 32; i++) putchar(((bits << i) & 0x80000000) ? '1' : '0');
+    return i;
 }
 
 /**
@@ -98,11 +102,13 @@ int libswd_bin32_print(int *data){
  * \param *data source data pointer.
  * \return pointer to the resulting string.
  */
-char *libswd_bin8_string(char *data){
- static char string[9]; string[8]=0;
- unsigned char i, bits=*data;
- for (i=0;i<8;i++) string[7-i]=(bits&(1<<i))?'1':'0';
- return string;
+char *libswd_bin8_string(char *data)
+{
+    static char string[9];
+    string[8] = 0;
+    unsigned char i, bits = *data;
+    for (i = 0; i < 8; i++) string[7 - i] = (bits & (1 << i)) ? '1' : '0';
+    return string;
 }
 
 /**
@@ -110,11 +116,13 @@ char *libswd_bin8_string(char *data){
  * \param *data source data pointer.
  * \return pointer to the resulting string.
  */
-char *libswd_bin32_string(int *data){
- static char string[33]; string[32]=0;
- unsigned int i, bits=*data;
- for (i=0;i<32;i++) string[31-i]=(bits&(1<<i))?'1':'0';
- return string;
+char *libswd_bin32_string(int *data)
+{
+    static char string[33];
+    string[32] = 0;
+    unsigned int i, bits = *data;
+    for (i = 0; i < 32; i++) string[31 - i] = (bits & (1 << i)) ? '1' : '0';
+    return string;
 }
 
 /**
@@ -125,21 +133,22 @@ char *libswd_bin32_string(int *data){
  * \param bitcount how many bits to swap.
  * \return swapped bit count (positive) or error code (negative).
  */
-int libswd_bin8_bitswap(unsigned char *buffer, unsigned int bitcount){
- if (buffer==NULL) return LIBSWD_ERROR_NULLPOINTER;
- if (bitcount>8) return LIBSWD_ERROR_PARAM;
- unsigned char bit, result=0; //res must be unsigned for proper shifting result
- #ifdef __SWDDEBUG__
- printf("|LIBSWD_DEBUG: libswd_bin8_bitswap(%02X, %d);\n", *buffer, bitcount);
- #endif
- for (bit=0;bit<bitcount;bit++) {
-  result=(result<<1)|(((*buffer>>bit)&1)?1:0);
-  #ifdef __SWDDEBUG__
-  printf("|LIBSWD_DEBUG: libswd_bin8_bitswap: in=%02X out=%02X bit=%d\n", *buffer, result, bit);
-  #endif
- }
- *buffer=result;
- return bit;
+int libswd_bin8_bitswap(unsigned char *buffer, unsigned int bitcount)
+{
+    if (buffer == NULL) return LIBSWD_ERROR_NULLPOINTER;
+    if (bitcount > 8) return LIBSWD_ERROR_PARAM;
+    unsigned char bit, result = 0; //res must be unsigned for proper shifting result
+#ifdef __SWDDEBUG__
+    printf("|LIBSWD_DEBUG: libswd_bin8_bitswap(%02X, %d);\n", *buffer, bitcount);
+#endif
+    for (bit = 0; bit < bitcount; bit++) {
+        result = (result << 1) | (((*buffer >> bit) & 1) ? 1 : 0);
+#ifdef __SWDDEBUG__
+        printf("|LIBSWD_DEBUG: libswd_bin8_bitswap: in=%02X out=%02X bit=%d\n", *buffer, result, bit);
+#endif
+    }
+    *buffer = result;
+    return bit;
 }
 
 /**
@@ -150,21 +159,22 @@ int libswd_bin8_bitswap(unsigned char *buffer, unsigned int bitcount){
  * \param bitcount how many bits to swap.
  * \return swapped bit count (positive) or error code (negative).
  */
-int libswd_bin32_bitswap(unsigned int *buffer, unsigned int bitcount){
- if (buffer==NULL) return LIBSWD_ERROR_NULLPOINTER;
- if (bitcount>32) return LIBSWD_ERROR_PARAM;
- unsigned int bit, result=0; //res must be unsigned for proper shifting result
- #ifdef __SWDDEBUG__
- printf("|LIBSWD_DEBUG: libswd_bin32_bitswap(%08X, %d);\n", *buffer, bitcount);
- #endif
- for (bit=0;bit<bitcount;bit++) {
-  result=(result<<1)|(((*buffer>>bit)&1)?1:0);
-  #ifdef __SWDDEBUG__
-  printf("|LIBSWD_DEBUG: libswd_bin32_bitswap: in=%08X out=%08X bit=%d\n", *buffer, result, bit);
-  #endif
- }
- *buffer=result;
- return bit;
+int libswd_bin32_bitswap(unsigned int *buffer, unsigned int bitcount)
+{
+    if (buffer == NULL) return LIBSWD_ERROR_NULLPOINTER;
+    if (bitcount > 32) return LIBSWD_ERROR_PARAM;
+    unsigned int bit, result = 0; //res must be unsigned for proper shifting result
+#ifdef __SWDDEBUG__
+    printf("|LIBSWD_DEBUG: libswd_bin32_bitswap(%08X, %d);\n", *buffer, bitcount);
+#endif
+    for (bit = 0; bit < bitcount; bit++) {
+        result = (result << 1) | (((*buffer >> bit) & 1) ? 1 : 0);
+#ifdef __SWDDEBUG__
+        printf("|LIBSWD_DEBUG: libswd_bin32_bitswap: in=%08X out=%08X bit=%d\n", *buffer, result, bit);
+#endif
+    }
+    *buffer = result;
+    return bit;
 }
 
 /** @} */

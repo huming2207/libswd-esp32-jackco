@@ -52,31 +52,32 @@
  * \param *request pointer where to store resulting packet.
  * \return number of generated packets (1), or LIBSWD_ERROR_CODE on failure.
  */
-int libswd_bitgen8_request(libswd_ctx_t *libswdctx, char *APnDP, char *RnW, char *addr, char *request){
- /* Verify function parameters.*/
- if (libswdctx==NULL) return LIBSWD_ERROR_NULLCONTEXT;
- if (*APnDP!=0 && *APnDP!=1) return LIBSWD_ERROR_APnDP;
- if (*RnW!=0 && *RnW!=1) return LIBSWD_ERROR_RnW;
- if (*addr<LIBSWD_ADDR_MINVAL && *addr>LIBSWD_ADDR_MAXVAL) return LIBSWD_ERROR_ADDR;
+int libswd_bitgen8_request(libswd_ctx_t *libswdctx, char *APnDP, char *RnW, char *addr, char *request)
+{
+    /* Verify function parameters.*/
+    if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
+    if (*APnDP != 0 && *APnDP != 1) return LIBSWD_ERROR_APnDP;
+    if (*RnW != 0 && *RnW != 1) return LIBSWD_ERROR_RnW;
+    if (*addr < LIBSWD_ADDR_MINVAL && *addr > LIBSWD_ADDR_MAXVAL) return LIBSWD_ERROR_ADDR;
 
- /* Build request header content. */
- unsigned char reqhdr=0;
- char parity, req;
- int res;
- reqhdr|=(((*addr&(1<<2))?1:0)<<LIBSWD_REQUEST_A2_BITNUM);
- reqhdr|=(((*addr&(1<<3))?1:0)<<LIBSWD_REQUEST_A3_BITNUM);
- reqhdr|=((*APnDP?1:0)<<LIBSWD_REQUEST_APnDP_BITNUM);
- reqhdr|=(((*RnW?1:0)<<LIBSWD_REQUEST_RnW_BITNUM));
- req=reqhdr;
- res=libswd_bin8_parity_even(&req, &parity);
- if (res<0) return res;
- if (parity<0 || parity>1) return LIBSWD_ERROR_PARITY;
- reqhdr|=(res<<LIBSWD_REQUEST_PARITY_BITNUM);
- reqhdr|=(LIBSWD_REQUEST_START_VAL<<LIBSWD_REQUEST_START_BITNUM);
- reqhdr|=(LIBSWD_REQUEST_STOP_VAL<<LIBSWD_REQUEST_STOP_BITNUM);
- reqhdr|=(LIBSWD_REQUEST_PARK_VAL<<LIBSWD_REQUEST_PARK_BITNUM);
+    /* Build request header content. */
+    unsigned char reqhdr = 0;
+    char parity, req;
+    int res;
+    reqhdr |= (((*addr & (1 << 2)) ? 1 : 0) << LIBSWD_REQUEST_A2_BITNUM);
+    reqhdr |= (((*addr & (1 << 3)) ? 1 : 0) << LIBSWD_REQUEST_A3_BITNUM);
+    reqhdr |= ((*APnDP ? 1 : 0) << LIBSWD_REQUEST_APnDP_BITNUM);
+    reqhdr |= (((*RnW ? 1 : 0) << LIBSWD_REQUEST_RnW_BITNUM));
+    req = reqhdr;
+    res = libswd_bin8_parity_even(&req, &parity);
+    if (res < 0) return res;
+    if (parity < 0 || parity > 1) return LIBSWD_ERROR_PARITY;
+    reqhdr |= (res << LIBSWD_REQUEST_PARITY_BITNUM);
+    reqhdr |= (LIBSWD_REQUEST_START_VAL << LIBSWD_REQUEST_START_BITNUM);
+    reqhdr |= (LIBSWD_REQUEST_STOP_VAL << LIBSWD_REQUEST_STOP_BITNUM);
+    reqhdr |= (LIBSWD_REQUEST_PARK_VAL << LIBSWD_REQUEST_PARK_BITNUM);
 
- *request=reqhdr;
- return 1;
+    *request = reqhdr;
+    return 1;
 }
 /** @} */

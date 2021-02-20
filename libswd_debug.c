@@ -49,133 +49,130 @@
  */
 int libswd_debug_detect(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 {
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG, "LIBSWD_I: Executing libswd_debug_detect(*libswdctx=%p, operation=%s)\n", (void*)libswdctx, libswd_operation_string(operation));
+    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
+               "LIBSWD_I: Executing libswd_debug_detect(*libswdctx=%p, operation=%s)\n", (void *) libswdctx,
+               libswd_operation_string(operation));
 
- if (!libswdctx) return LIBSWD_ERROR_NULLCONTEXT;
- int retval=0, cpuid;
- unsigned int i;
+    if (!libswdctx) return LIBSWD_ERROR_NULLCONTEXT;
+    int retval = 0, cpuid;
+    unsigned int i;
 
- if (!libswdctx->log.memap.initialized)
- {
-  retval=libswd_memap_init(libswdctx, operation);
-  if (retval<0) return retval;
- }
+    if (!libswdctx->log.memap.initialized) {
+        retval = libswd_memap_init(libswdctx, operation);
+        if (retval < 0) return retval;
+    }
 
- retval=libswd_memap_read_int_32(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_ARM_DEBUG_CPUID_ADDR, 1, &cpuid);
- if (retval<0) return retval;
+    retval = libswd_memap_read_int_32(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_ARM_DEBUG_CPUID_ADDR, 1, &cpuid);
+    if (retval < 0) return retval;
 
- for (i=0;i<LIBSWD_NUM_SUPPORTED_CPUIDS;i++)
- {
-  if (cpuid==libswd_arm_debug_CPUID[i].default_value)
-  {
-   libswdctx->log.debug.cpuid=libswd_arm_debug_CPUID[i];
-   libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-              "LIBSWD_I: libswd_debug_detect(): Found supported CPUID=0x%08X (%s).\n",
-              libswd_arm_debug_CPUID[i].default_value, libswd_arm_debug_CPUID[i].name );
-   break;
-  }
- }
- if (i==LIBSWD_NUM_SUPPORTED_CPUIDS) {
-	 libswdctx->log.debug.cpuid.default_value=cpuid;
-	 return LIBSWD_ERROR_UNSUPPORTED;
- }
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG, "LIBSWD_I: libswd_debug_detect(*libswdctx=%p, operation=%s) execution OK...\n", (void*)libswdctx, libswd_operation_string(operation));
- return LIBSWD_OK;
+    for (i = 0; i < LIBSWD_NUM_SUPPORTED_CPUIDS; i++) {
+        if (cpuid == libswd_arm_debug_CPUID[i].default_value) {
+            libswdctx->log.debug.cpuid = libswd_arm_debug_CPUID[i];
+            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
+                       "LIBSWD_I: libswd_debug_detect(): Found supported CPUID=0x%08X (%s).\n",
+                       libswd_arm_debug_CPUID[i].default_value, libswd_arm_debug_CPUID[i].name);
+            break;
+        }
+    }
+    if (i == LIBSWD_NUM_SUPPORTED_CPUIDS) {
+        libswdctx->log.debug.cpuid.default_value = cpuid;
+        return LIBSWD_ERROR_UNSUPPORTED;
+    }
+    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
+               "LIBSWD_I: libswd_debug_detect(*libswdctx=%p, operation=%s) execution OK...\n", (void *) libswdctx,
+               libswd_operation_string(operation));
+    return LIBSWD_OK;
 }
 
 
 int libswd_debug_init(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 {
- if (!libswdctx) return LIBSWD_ERROR_NULLCONTEXT;
- if ( operation!=LIBSWD_OPERATION_EXECUTE && operation!=LIBSWD_OPERATION_ENQUEUE) return LIBSWD_ERROR_BADOPCODE;
+    if (!libswdctx) return LIBSWD_ERROR_NULLCONTEXT;
+    if (operation != LIBSWD_OPERATION_EXECUTE && operation != LIBSWD_OPERATION_ENQUEUE) return LIBSWD_ERROR_BADOPCODE;
 
- int retval;
- retval=libswd_debug_detect(libswdctx, operation);
- if (retval<0) return retval;
- libswdctx->log.debug.initialized=1;
- return LIBSWD_OK;
+    int retval;
+    retval = libswd_debug_detect(libswdctx, operation);
+    if (retval < 0) return retval;
+    libswdctx->log.debug.initialized = 1;
+    return LIBSWD_OK;
 }
 
 
 int libswd_debug_halt(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 {
- if (libswdctx==NULL) return LIBSWD_ERROR_NULLCONTEXT;
- if (operation!=LIBSWD_OPERATION_EXECUTE && operation!=LIBSWD_OPERATION_ENQUEUE) return LIBSWD_ERROR_PARAM;
+    if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
+    if (operation != LIBSWD_OPERATION_EXECUTE && operation != LIBSWD_OPERATION_ENQUEUE) return LIBSWD_ERROR_PARAM;
 
- int retval, i, dbgdhcsr;
+    int retval, i, dbgdhcsr;
 
- if (!libswdctx->log.debug.initialized)
- {
-  retval=libswd_debug_init(libswdctx, operation);
-  if (retval<0) return retval;
- }
- // Halt the CPU.
- retval=libswd_memap_read_int_32(libswdctx, operation, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1, &dbgdhcsr);
- if (retval<0) return retval;
- for (i=LIBSWD_RETRY_COUNT_DEFAULT;i;i--)
- {
-  dbgdhcsr=LIBSWD_ARM_DEBUG_DHCSR_DBGKEY;
-  dbgdhcsr|=LIBSWD_ARM_DEBUG_DHCSR_CDEBUGEN;
-  dbgdhcsr|=LIBSWD_ARM_DEBUG_DHCSR_CHALT;
-  dbgdhcsr&=~LIBSWD_ARM_DEBUG_DHCSR_CMASKINTS;
-  retval=libswd_memap_write_int_32(libswdctx, operation, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1, &dbgdhcsr);
-  if (retval<0) return retval;
-  retval=libswd_memap_read_int_32(libswdctx, operation, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1, &dbgdhcsr);
-  if (retval<0) return retval;
-  if (dbgdhcsr&LIBSWD_ARM_DEBUG_DHCSR_SHALT)
-  {
-   libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO, "LIBSWD_I: libswd_debug_halt(): DHCSR=0x%08X\n", dbgdhcsr);
-   libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N: libswd_debug_halt(): TARGET HALT OK!\n");
-   libswdctx->log.debug.dhcsr=dbgdhcsr;
-   return LIBSWD_OK;
-  }
- }
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR, "LIBSWD_E: libswd_debug_halt(): TARGET HALT ERROR!\n");
- return LIBSWD_ERROR_MAXRETRY;
+    if (!libswdctx->log.debug.initialized) {
+        retval = libswd_debug_init(libswdctx, operation);
+        if (retval < 0) return retval;
+    }
+    // Halt the CPU.
+    retval = libswd_memap_read_int_32(libswdctx, operation, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1, &dbgdhcsr);
+    if (retval < 0) return retval;
+    for (i = LIBSWD_RETRY_COUNT_DEFAULT; i; i--) {
+        dbgdhcsr = LIBSWD_ARM_DEBUG_DHCSR_DBGKEY;
+        dbgdhcsr |= LIBSWD_ARM_DEBUG_DHCSR_CDEBUGEN;
+        dbgdhcsr |= LIBSWD_ARM_DEBUG_DHCSR_CHALT;
+        dbgdhcsr &= ~LIBSWD_ARM_DEBUG_DHCSR_CMASKINTS;
+        retval = libswd_memap_write_int_32(libswdctx, operation, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1, &dbgdhcsr);
+        if (retval < 0) return retval;
+        retval = libswd_memap_read_int_32(libswdctx, operation, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1, &dbgdhcsr);
+        if (retval < 0) return retval;
+        if (dbgdhcsr & LIBSWD_ARM_DEBUG_DHCSR_SHALT) {
+            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO, "LIBSWD_I: libswd_debug_halt(): DHCSR=0x%08X\n", dbgdhcsr);
+            libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N: libswd_debug_halt(): TARGET HALT OK!\n");
+            libswdctx->log.debug.dhcsr = dbgdhcsr;
+            return LIBSWD_OK;
+        }
+    }
+    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR, "LIBSWD_E: libswd_debug_halt(): TARGET HALT ERROR!\n");
+    return LIBSWD_ERROR_MAXRETRY;
 }
 
 int libswd_debug_run(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 {
- if (libswdctx==NULL) return LIBSWD_ERROR_NULLCONTEXT;
- if (operation!=LIBSWD_OPERATION_EXECUTE && operation!=LIBSWD_OPERATION_ENQUEUE) return LIBSWD_ERROR_PARAM;
+    if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
+    if (operation != LIBSWD_OPERATION_EXECUTE && operation != LIBSWD_OPERATION_ENQUEUE) return LIBSWD_ERROR_PARAM;
 
- int retval, i, dbgdhcsr;
+    int retval, i, dbgdhcsr;
 
- if (!libswdctx->log.debug.initialized)
- {
-  retval=libswd_debug_init(libswdctx, operation);
-  if (retval<0) return retval;
- }
- // UnHalt the CPU.
- retval=libswd_memap_read_int_32(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1, &dbgdhcsr);
- if (retval<0) return retval;
- for (i=LIBSWD_RETRY_COUNT_DEFAULT;i;i--)
- {
-  dbgdhcsr=LIBSWD_ARM_DEBUG_DHCSR_DBGKEY;
-  dbgdhcsr|=LIBSWD_ARM_DEBUG_DHCSR_CDEBUGEN;
-  dbgdhcsr&=~LIBSWD_ARM_DEBUG_DHCSR_CHALT;
-  retval=libswd_memap_write_int_32(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1, &dbgdhcsr);
-  if (retval<0) return retval;
-  retval=libswd_memap_read_int_32(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1, &dbgdhcsr);
-  if (retval<0) return retval;
-  if (!(dbgdhcsr&LIBSWD_ARM_DEBUG_DHCSR_SHALT))
-  {
-   libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N: libswd_debug_run(): TARGET RUN OK!\n");
-   libswdctx->log.debug.dhcsr=dbgdhcsr;
-   return LIBSWD_OK;
-  }
+    if (!libswdctx->log.debug.initialized) {
+        retval = libswd_debug_init(libswdctx, operation);
+        if (retval < 0) return retval;
+    }
+    // UnHalt the CPU.
+    retval = libswd_memap_read_int_32(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1, &dbgdhcsr);
+    if (retval < 0) return retval;
+    for (i = LIBSWD_RETRY_COUNT_DEFAULT; i; i--) {
+        dbgdhcsr = LIBSWD_ARM_DEBUG_DHCSR_DBGKEY;
+        dbgdhcsr |= LIBSWD_ARM_DEBUG_DHCSR_CDEBUGEN;
+        dbgdhcsr &= ~LIBSWD_ARM_DEBUG_DHCSR_CHALT;
+        retval = libswd_memap_write_int_32(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1,
+                                           &dbgdhcsr);
+        if (retval < 0) return retval;
+        retval = libswd_memap_read_int_32(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1,
+                                          &dbgdhcsr);
+        if (retval < 0) return retval;
+        if (!(dbgdhcsr & LIBSWD_ARM_DEBUG_DHCSR_SHALT)) {
+            libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N: libswd_debug_run(): TARGET RUN OK!\n");
+            libswdctx->log.debug.dhcsr = dbgdhcsr;
+            return LIBSWD_OK;
+        }
 
- }
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR, "LIBSWD_E: libswd_debug_run(): TARGET RUN ERROR!\n");
- return LIBSWD_ERROR_MAXRETRY;
+    }
+    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR, "LIBSWD_E: libswd_debug_run(): TARGET RUN ERROR!\n");
+    return LIBSWD_ERROR_MAXRETRY;
 }
 
 int libswd_debug_is_halted(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 {
- if (libswdctx==NULL) return LIBSWD_ERROR_NULLCONTEXT;
- if (operation!=LIBSWD_OPERATION_EXECUTE && operation!=LIBSWD_OPERATION_ENQUEUE) return LIBSWD_ERROR_PARAM;
+    if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
+    if (operation != LIBSWD_OPERATION_EXECUTE && operation != LIBSWD_OPERATION_ENQUEUE) return LIBSWD_ERROR_PARAM;
 
- return (libswdctx->log.debug.dhcsr&LIBSWD_ARM_DEBUG_DHCSR_SHALT)?1:0;
+    return (libswdctx->log.debug.dhcsr & LIBSWD_ARM_DEBUG_DHCSR_SHALT) ? 1 : 0;
 }
 
 
