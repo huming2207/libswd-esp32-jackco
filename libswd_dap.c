@@ -62,8 +62,8 @@
 int libswd_dap_init(libswd_ctx_t *libswdctx, libswd_operation_t operation, int **idcode)
 {
     ESP_LOGD(TAG, 
-               "libswd_dap_init(*libswdctx=@%p, operation=%s, **idcode=@%p) entring function...",
-               (void *) libswdctx, libswd_operation_string(operation), (void **) idcode);
+               "libswd_dap_init(*libswdctx=@%p, operation=0x%x, **idcode=@%p) entring function...",
+               (void *) libswdctx, operation, (void **) idcode);
     if (!libswdctx) return LIBSWD_ERROR_NULLCONTEXT;
     if (!idcode) return LIBSWD_ERROR_NULLPOINTER;
     int res, dpselect = 0, dpabort = ~0, dpctrlstat = 0;
@@ -95,8 +95,8 @@ int libswd_dap_init(libswd_ctx_t *libswdctx, libswd_operation_t operation, int *
 int libswd_dap_setup(libswd_ctx_t *libswdctx, libswd_operation_t operation, int *abort, int *ctrlstat)
 {
     ESP_LOGD(TAG, 
-               "libswd_dap_setup(*libswdctx=@%p, operation=%s, *abort=0x%X@%p, *ctrlstat=0x%X@%p) entring function...",
-               (void *) libswdctx, libswd_operation_string(operation), abort ? *abort : 0, (void *) abort,
+               "libswd_dap_setup(*libswdctx=@%p, operation=0x%x, *abort=0x%X@%p, *ctrlstat=0x%X@%p) entring function...",
+               (void *) libswdctx, operation, abort ? *abort : 0, (void *) abort,
                ctrlstat ? *ctrlstat : 0, (void *) ctrlstat);
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
     int i, res;
@@ -150,8 +150,8 @@ int libswd_dap_setup(libswd_ctx_t *libswdctx, libswd_operation_t operation, int 
 int libswd_dap_reset(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 {
     ESP_LOGD(TAG, 
-               "Executing libswd_dap_reset(*libswdctx=@%p, operation=%s)",
-               (void *) libswdctx, libswd_operation_string(operation));
+               "Executing libswd_dap_reset(*libswdctx=@%p, operation=0x%x)",
+               (void *) libswdctx, operation);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
     if (operation != LIBSWD_OPERATION_ENQUEUE && operation != LIBSWD_OPERATION_EXECUTE)
@@ -183,8 +183,8 @@ int libswd_dap_reset(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 int libswd_dap_select(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 {
     ESP_LOGD(TAG, 
-               "Executing libswd_dap_activate(*libswdctx=@%p, operation=%s)",
-               (void *) libswdctx, libswd_operation_string(operation));
+               "Executing libswd_dap_activate(*libswdctx=@%p, operation=0x%x)",
+               (void *) libswdctx, operation);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
     if (operation != LIBSWD_OPERATION_ENQUEUE && operation != LIBSWD_OPERATION_EXECUTE)
@@ -220,8 +220,8 @@ int libswd_dap_select(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 int libswd_dap_errors_handle(libswd_ctx_t *libswdctx, libswd_operation_t operation, int *abort, int *ctrlstat)
 {
     ESP_LOGD(TAG, 
-               "Executing libswd_dap_errors_handle(*libswdctx=@%p, operation=%s, *abort=%p, *ctrlstat=0x%X@%p)",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Executing libswd_dap_errors_handle(*libswdctx=@%p, operation=0x%x, *abort=%p, *ctrlstat=0x%X@%p)",
+               (void *) libswdctx, operation,
                abort ? abort : 0, ctrlstat ? *ctrlstat : 0,
                (void *) ctrlstat);
 
@@ -264,8 +264,8 @@ int libswd_dap_errors_handle(libswd_ctx_t *libswdctx, libswd_operation_t operati
 int libswd_dp_read_idcode(libswd_ctx_t *libswdctx, libswd_operation_t operation, int **idcode)
 {
     ESP_LOGD(TAG, 
-               "libswd_dp_read_idcode(*libswdctx=%p, operation=%s): entering function...",
-               (void *) libswdctx, libswd_operation_string(operation));
+               "libswd_dp_read_idcode(*libswdctx=%p, operation=0x%x): entering function...",
+               (void *) libswdctx, operation);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
     if (operation != LIBSWD_OPERATION_ENQUEUE && operation != LIBSWD_OPERATION_EXECUTE)
@@ -306,8 +306,8 @@ int libswd_dp_read_idcode(libswd_ctx_t *libswdctx, libswd_operation_t operation,
         if (res < 0) return res;
         if (cparity != *parity) return LIBSWD_ERROR_PARITY;
         ESP_LOGI(TAG, 
-                   "libswd_dp_read_idcode(libswdctx=@%p, operation=%s, **idcode=0x%X/%s).",
-                   (void *) libswdctx, libswd_operation_string(operation), **idcode, libswd_bin32_string(*idcode));
+                   "libswd_dp_read_idcode(libswdctx=@%p, operation=0x%x, **idcode=0x%X/%s).",
+                   (void *) libswdctx, operation, **idcode, libswd_bin32_string(*idcode));
         return cmdcnt;
     } else return LIBSWD_ERROR_BADOPCODE;
 }
@@ -342,8 +342,8 @@ int libswd_dap_detect(libswd_ctx_t *libswdctx, libswd_operation_t operation, int
 int libswd_dp_read(libswd_ctx_t *libswdctx, libswd_operation_t operation, char addr, int **data)
 {
     ESP_LOGD(TAG, 
-               "libswd_dp_read(libswdctx=@%p, operation=%s, addr=0x%X, **data=%p) entering function...",
-               (void *) libswdctx, libswd_operation_string(operation), addr, (void **) &data);
+               "libswd_dp_read(libswdctx=@%p, operation=0x%x, addr=0x%X, **data=%p) entering function...",
+               (void *) libswdctx, operation, addr, (void **) &data);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
     if (data == NULL) return LIBSWD_ERROR_NULLPOINTER;
@@ -400,12 +400,12 @@ int libswd_dp_read(libswd_ctx_t *libswdctx, libswd_operation_t operation, char a
             if (retry == 0) return LIBSWD_ERROR_MAXRETRY;
         }
         if (res < 0) {
-            //ESP_LOGE(TAG,  "libswd_dp_read(libswdctx=@%p, operation=%s, addr=0x%X, **data=0x%X/%s) failed: %s.", (void*)libswdctx, libswd_operation_string(operation), addr, **data, libswd_bin32_string(*data), libswd_error_string(res));
+            //ESP_LOGE(TAG,  "libswd_dp_read(libswdctx=@%p, operation=0x%x, addr=0x%X, **data=0x%X/%s) failed: %s.", (void*)libswdctx, operation, addr, **data, libswd_bin32_string(*data), libswd_error_string(res));
             return res;
         }
         ESP_LOGD(TAG, 
-                   "libswd_dp_read(libswdctx=@%p, operation=%s, addr=0x%X, **data=0x%X/%s) execution OK.",
-                   (void *) libswdctx, libswd_operation_string(operation), addr, **data, libswd_bin32_string(*data));
+                   "libswd_dp_read(libswdctx=@%p, operation=0x%x, addr=0x%X, **data=0x%X/%s) execution OK.",
+                   (void *) libswdctx, operation, addr, **data, libswd_bin32_string(*data));
         // Here we also can cache DP register values into libswdctx log.
         switch (addr) {
             case LIBSWD_DP_IDCODE_ADDR:
@@ -438,8 +438,8 @@ int libswd_dp_read(libswd_ctx_t *libswdctx, libswd_operation_t operation, char a
 int libswd_dp_write(libswd_ctx_t *libswdctx, libswd_operation_t operation, char addr, int *data)
 {
     ESP_LOGD(TAG, 
-               "libswd_dp_write(*libswdctx=%p, operation=%s, addr=0x%X, *data=%p) entering function...",
-               (void *) libswdctx, libswd_operation_string(operation), addr, (void *) data);
+               "libswd_dp_write(*libswdctx=%p, operation=0x%x, addr=0x%X, *data=%p) entering function...",
+               (void *) libswdctx, operation, addr, (void *) data);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
     if (data == NULL) return LIBSWD_ERROR_NULLPOINTER;
@@ -492,14 +492,14 @@ int libswd_dp_write(libswd_ctx_t *libswdctx, libswd_operation_t operation, char 
         }
         if (res < 0) {
             ESP_LOGE(TAG, 
-                       "libswd_dp_write(libswdctx=@%p, operation=%s, addr=0x%X, *data=0x%X/%s) failed: %s.",
-                       (void *) libswdctx, libswd_operation_string(operation), addr, *data, libswd_bin32_string(data),
+                       "libswd_dp_write(libswdctx=@%p, operation=0x%x, addr=0x%X, *data=0x%X/%s) failed: %s.",
+                       (void *) libswdctx, operation, addr, *data, libswd_bin32_string(data),
                        libswd_error_string(res));
             return res;
         }
         ESP_LOGD(TAG, 
-                   "libswd_dp_write(libswdctx=@%p, operation=%s, addr=0x%X, *data=0x%X/%s) execution OK.",
-                   (void *) libswdctx, libswd_operation_string(operation), addr, *data, libswd_bin32_string(data));
+                   "libswd_dp_write(libswdctx=@%p, operation=0x%x, addr=0x%X, *data=0x%X/%s) execution OK.",
+                   (void *) libswdctx, operation, addr, *data, libswd_bin32_string(data));
         // Here we also can cache DP register values into libswdctx log.
         switch (addr) {
             case LIBSWD_DP_ABORT_ADDR:
@@ -532,8 +532,8 @@ int libswd_dp_write(libswd_ctx_t *libswdctx, libswd_operation_t operation, char 
 int libswd_ap_bank_select(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr)
 {
     ESP_LOGD(TAG, 
-               "libswd_ap_bank_select(*libswdctx=%p, operation=%s, addr=0x%02X) entering function...",
-               (void *) libswdctx, libswd_operation_string(operation), addr);
+               "libswd_ap_bank_select(*libswdctx=%p, operation=0x%x, addr=0x%02X) entering function...",
+               (void *) libswdctx, operation, addr);
     // If the correct AP bank is already selected no need to change it.
     // Verify against cached DP SELECT register value.
     // Unfortunately SELECT register is read only so we need to work on cached values...
@@ -553,8 +553,8 @@ int libswd_ap_bank_select(libswd_ctx_t *libswdctx, libswd_operation_t operation,
     }
     libswdctx->log.dp.select = new_select;
     ESP_LOGD(TAG, 
-               "libswd_ap_bank_select(*libswdctx=%p, operation=%s, addr=0x%02X) execution OK.",
-               (void *) libswdctx, libswd_operation_string(operation), addr);
+               "libswd_ap_bank_select(*libswdctx=%p, operation=0x%x, addr=0x%02X) execution OK.",
+               (void *) libswdctx, operation, addr);
     return retval;
 }
 
@@ -568,8 +568,8 @@ int libswd_ap_bank_select(libswd_ctx_t *libswdctx, libswd_operation_t operation,
 int libswd_ap_select(libswd_ctx_t *libswdctx, libswd_operation_t operation, int ap)
 {
     ESP_LOGD(TAG, 
-               "libswd_ap_select(*libswdctx=%p, operation=%s, ap=0x%02X) entering function...",
-               (void *) libswdctx, libswd_operation_string(operation), ap);
+               "libswd_ap_select(*libswdctx=%p, operation=0x%x, ap=0x%02X) entering function...",
+               (void *) libswdctx, operation, ap);
 
     // If the correct AP is already selected no need to change it.
     // Verify against cached DP SELECT register value.
@@ -585,8 +585,8 @@ int libswd_ap_select(libswd_ctx_t *libswdctx, libswd_operation_t operation, int 
                    (void *) libswdctx, ap, new_select, libswd_error_string(retval));
     } else libswdctx->log.dp.select = new_select;
     ESP_LOGD(TAG, 
-               "libswd_ap_select(*libswdctx=%p, operation=%s, ap=0x%02X) execution OK.", (void *) libswdctx,
-               libswd_operation_string(operation), ap);
+               "libswd_ap_select(*libswdctx=%p, operation=0x%x, ap=0x%02X) execution OK.", (void *) libswdctx,
+               operation, ap);
     return retval;
 }
 
@@ -602,8 +602,8 @@ int libswd_ap_select(libswd_ctx_t *libswdctx, libswd_operation_t operation, int 
 int libswd_ap_read(libswd_ctx_t *libswdctx, libswd_operation_t operation, char addr, int **data)
 {
     ESP_LOGD(TAG, 
-               "libswd_ap_read(*libswdctx=%p, command=%s, addr=0x%X, *data=%p) entering function...",
-               (void *) libswdctx, libswd_operation_string(operation), (unsigned char) addr, (void **) data);
+               "libswd_ap_read(*libswdctx=%p, op=0x%x addr=0x%X, *data=%p) entering function...",
+               (void *) libswdctx, operation, (unsigned char) addr, (void **) data);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
     if (data == NULL) return LIBSWD_ERROR_NULLPOINTER;
@@ -657,13 +657,13 @@ int libswd_ap_read(libswd_ctx_t *libswdctx, libswd_operation_t operation, char a
             if (retry == 0) return LIBSWD_ERROR_MAXRETRY;
         } else if (LIBSWD_ERROR_ACK_FAULT == res) {
             ESP_LOGE(TAG, 
-                       "libswd_ap_read(libswdctx=@%p, operation=%s, addr=0x%X) failed: %s.",
-                       (void *) libswdctx, libswd_operation_string(operation), addr, libswd_error_string(res));
+                       "libswd_ap_read(libswdctx=@%p, operation=0x%x, addr=0x%X) failed: %s.",
+                       (void *) libswdctx, operation, addr, libswd_error_string(res));
             return res;
         } else {
             ESP_LOGE(TAG, 
-                       "libswd_ap_read(libswdctx=@%p, operation=%s, addr=0x%X) failed: %s.",
-                       (void *) libswdctx, libswd_operation_string(operation), addr, libswd_error_string(res));
+                       "libswd_ap_read(libswdctx=@%p, operation=0x%x, addr=0x%X) failed: %s.",
+                       (void *) libswdctx, operation, addr, libswd_error_string(res));
             abort = 0xFFFFFFFE;
             res = libswd_dap_errors_handle(libswdctx, LIBSWD_OPERATION_EXECUTE, &abort, &ctrlstat);
             return res;
@@ -671,8 +671,8 @@ int libswd_ap_read(libswd_ctx_t *libswdctx, libswd_operation_t operation, char a
         res = libswd_dp_read(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_DP_RDBUFF_ADDR, data);
         if (res < 0) {
             ESP_LOGE(TAG, 
-                       "libswd_ap_read(libswdctx=@%p, operation=%s, addr=0x%X, **data=0x%X/%s) failed: %s.",
-                       (void *) libswdctx, libswd_operation_string(operation), addr, **data, libswd_bin32_string(*data),
+                       "libswd_ap_read(libswdctx=@%p, operation=0x%x, addr=0x%X, **data=0x%X/%s) failed: %s.",
+                       (void *) libswdctx, operation, addr, **data, libswd_bin32_string(*data),
                        libswd_error_string(res));
             return res;
         }
@@ -681,8 +681,8 @@ int libswd_ap_read(libswd_ctx_t *libswdctx, libswd_operation_t operation, char a
         res = libswd_dap_errors_handle(libswdctx, LIBSWD_OPERATION_EXECUTE, &abort, &ctrlstat);
         if (res < 0) return res;
         ESP_LOGD(TAG, 
-                   "libswd_ap_read(libswdctx=@%p, command=%s, addr=0x%X, **data=0x%X/%s) execution OK.",
-                   (void *) libswdctx, libswd_operation_string(operation), addr, **data, libswd_bin32_string(*data));
+                   "libswd_ap_read(libswdctx=@%p, op=0x%x, addr=0x%X, **data=0x%X/%s) execution OK.",
+                   (void *) libswdctx, operation, addr, **data, libswd_bin32_string(*data));
         return cmdcnt;
     } else return LIBSWD_ERROR_BADOPCODE;
 }
@@ -698,8 +698,8 @@ int libswd_ap_read(libswd_ctx_t *libswdctx, libswd_operation_t operation, char a
 int libswd_ap_write(libswd_ctx_t *libswdctx, libswd_operation_t operation, char addr, int *data)
 {
     ESP_LOGD(TAG, 
-               "libswd_ap_write(libswdctx=@%p, operation=%s, addr=0x%X, *data=0x%X).", (void *) libswdctx,
-               libswd_operation_string(operation), addr, *data);
+               "libswd_ap_write(libswdctx=@%p, operation=0x%x, addr=0x%X, *data=0x%X).", (void *) libswdctx,
+               operation, addr, *data);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
     if (operation != LIBSWD_OPERATION_ENQUEUE && operation != LIBSWD_OPERATION_EXECUTE)
@@ -755,16 +755,16 @@ int libswd_ap_write(libswd_ctx_t *libswdctx, libswd_operation_t operation, char 
         }
         if (res < 0) {
             ESP_LOGE(TAG, 
-                       "libswd_ap_write(libswdctx=@%p, operation=%s, addr=0x%X, *data=0x%X/%s) failed: %s.",
-                       (void *) libswdctx, libswd_operation_string(operation), addr, *data, libswd_bin32_string(data),
+                       "libswd_ap_write(libswdctx=@%p, operation=0x%x, addr=0x%X, *data=0x%X/%s) failed: %s.",
+                       (void *) libswdctx, operation, addr, *data, libswd_bin32_string(data),
                        libswd_error_string(res));
             abort = 0xFFFFFFFE;
             res = libswd_dap_errors_handle(libswdctx, LIBSWD_OPERATION_EXECUTE, &abort, &ctrlstat);
             return res;
         }
         ESP_LOGD(TAG, 
-                   "libswd_ap_write(libswdctx=@%p, operation=%s, addr=0x%X, *data=0x%X/%s) execution OK.",
-                   (void *) libswdctx, libswd_operation_string(operation), addr, *data, libswd_bin32_string(data));
+                   "libswd_ap_write(libswdctx=@%p, operation=0x%x, addr=0x%X, *data=0x%X/%s) execution OK.",
+                   (void *) libswdctx, operation, addr, *data, libswd_bin32_string(data));
         return cmdcnt;
     } else return LIBSWD_ERROR_BADOPCODE;
     return LIBSWD_OK;

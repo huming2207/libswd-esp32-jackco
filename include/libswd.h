@@ -508,20 +508,6 @@ typedef enum {
 /// Do we want autofix errors by default? Not at this point...
 #define LIBSWD_AUTOFIX_DEFAULT LIBSWD_FALSE
 
-/** Logging Level Codes definition */
-///Logging Level codes definition, use this to have its name on debugger.
-typedef enum {
- LIBSWD_LOGLEVEL_MIN     = 0,
- LIBSWD_LOGLEVEL_SILENT  = 0, ///< Remain silent.
- LIBSWD_LOGLEVEL_NORMAL  = 1, ///< Normal verbosity.
- LIBSWD_LOGLEVEL_ERROR   = 2, ///< Show errors.
- LIBSWD_LOGLEVEL_WARNING = 3, ///< Show warnings.
- LIBSWD_LOGLEVEL_INFO    = 4, ///< Show messages.
- LIBSWD_LOGLEVEL_DEBUG   = 5, ///< Show debug information.
- LIBSWD_LOGLEVEL_PAYLOAD = 6, ///< Show packet payload.
- LIBSWD_LOGLEVEL_MAX     = 6
-} libswd_loglevel_t;
-
 /// What is the default loglevel? Normal!
 #define LIBSWD_LOGLEVEL_DEFAULT LIBSWD_LOGLEVEL_ERROR
 
@@ -618,7 +604,6 @@ typedef struct {
  char initialized;        ///< Context must be initialized prior use.
  char trnlen;             ///< How many CLK cycles will TRN use.
  int  maxcmdqlen;         ///< How long command queue can be.
- libswd_loglevel_t loglevel; ///< Holds Logging Level setting.
  char autofixerrors;      ///< Try to fix errors, return error code if not possible.
 } libswd_context_config_t;
 
@@ -896,16 +881,6 @@ extern int libswd_drv_miso_32(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd, int *d
 extern int libswd_drv_mosi_trn(libswd_ctx_t *libswdctx, int clks);
 extern int libswd_drv_miso_trn(libswd_ctx_t *libswdctx, int clks);
 
-extern int libswd_log(libswd_ctx_t *libswdctx, libswd_loglevel_t loglevel, char *msg, ...);
-int libswd_log_internal(libswd_ctx_t *libswdctx, libswd_loglevel_t loglevel, char *msg, ...);
-int libswd_log_internal_va(libswd_ctx_t *libswdctx, libswd_loglevel_t loglevel, char *msg, va_list ap);
-int libswd_log_level_set(libswd_ctx_t *libswdctx, libswd_loglevel_t loglevel);
-int libswd_log_level_get(libswd_ctx_t *libswdctx);
-extern int libswd_log_level_inherit(libswd_ctx_t *libswdctx, int loglevel);
-const char *libswd_log_level_string(libswd_loglevel_t loglevel);
-const char *libswd_operation_string(libswd_operation_t operation);
-const char *libswd_request_string(libswd_ctx_t *libswdctx, char request);
-
 char *libswd_error_string(libswd_error_code_t error);
 int libswd_error_handle(libswd_ctx_t *libswdctx);
 int libswd_error_handle_ack(libswd_ctx_t *libswdctx);
@@ -950,8 +925,6 @@ int libswd_debug_init(libswd_ctx_t *libswdctx, libswd_operation_t operation);
 int libswd_debug_halt(libswd_ctx_t *libswdctx, libswd_operation_t operation);
 int libswd_debug_run(libswd_ctx_t *libswdctx, libswd_operation_t operation);
 int libswd_debug_is_halted(libswd_ctx_t *libswdctx, libswd_operation_t operation);
-
-int libswd_cli(libswd_ctx_t *libswdctx, char *command);
 
 #ifdef __cplusplus
 }

@@ -10,7 +10,6 @@ idf_component_register(
         libswd_debug.c
         libswd_drv.c
         libswd_error.c
-        libswd_log.c
         libswd_memap.c
         SWD_SPI.c
     INCLUDE_DIRS

@@ -55,8 +55,8 @@
 int libswd_memap_init(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 {
     ESP_LOGD(TAG, 
-               "Executing libswd_memap_init(*libswdctx=%p, operation=%s)...",
-               (void *) libswdctx, libswd_operation_string(operation));
+               "Executing libswd_memap_init(*libswdctx=%p, operation=0x%x)...",
+               (void *) libswdctx, operation);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
 
@@ -138,8 +138,8 @@ int libswd_memap_init(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 int libswd_memap_setup(libswd_ctx_t *libswdctx, libswd_operation_t operation, int csw, int tar)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_setup(*libswdctx=%p, operation=%s, csw=0x%08X, tar=0x%08X)...",
-               (void *) libswdctx, libswd_operation_string(operation), csw, tar);
+               "Entering libswd_memap_setup(*libswdctx=%p, operation=0x%x, csw=0x%08X, tar=0x%08X)...",
+               (void *) libswdctx, operation, csw, tar);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
 
@@ -201,8 +201,8 @@ int libswd_memap_setup(libswd_ctx_t *libswdctx, libswd_operation_t operation, in
 int libswd_memap_read_char(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, char *data)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_read_char(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entering libswd_memap_read_char(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, *data=%p)...",
+               (void *) libswdctx, operation,
                addr, count, (void *) data);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
@@ -344,8 +344,8 @@ int libswd_memap_read_char_csw(libswd_ctx_t *libswdctx, libswd_operation_t opera
                                int csw)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_read_char_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p, csw=0x%X)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entering libswd_memap_read_char_csw(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, *data=%p, csw=0x%X)...",
+               (void *) libswdctx, operation,
                addr, count, (void **) data, csw);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
@@ -409,8 +409,8 @@ int libswd_memap_read_char_csw(libswd_ctx_t *libswdctx, libswd_operation_t opera
 int libswd_memap_read_char_32(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, char *data)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_read_char_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entering libswd_memap_read_char_32(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, *data=%p)...",
+               (void *) libswdctx, operation,
                addr, count, (void **) data);
 
     return libswd_memap_read_char_csw(libswdctx, operation, addr, count, data,
@@ -429,8 +429,8 @@ int libswd_memap_read_char_32(libswd_ctx_t *libswdctx, libswd_operation_t operat
 int libswd_memap_read_int(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, int *data)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_read_int(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entering libswd_memap_read_int(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, *data=%p)...",
+               (void *) libswdctx, operation,
                addr, count, (void **) data);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
@@ -524,8 +524,8 @@ int libswd_memap_read_int_csw(libswd_ctx_t *libswdctx, libswd_operation_t operat
                               int csw)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_read_int_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p, csw=0x%X)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entering libswd_memap_read_int_csw(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, *data=%p, csw=0x%X)...",
+               (void *) libswdctx, operation,
                addr, count, (void **) data, csw);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
@@ -582,8 +582,8 @@ int libswd_memap_read_int_csw(libswd_ctx_t *libswdctx, libswd_operation_t operat
 int libswd_memap_read_int_32(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, int *data)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_read_int_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entering libswd_memap_read_int_32(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, *data=%p)...",
+               (void *) libswdctx, operation,
                addr, count, (void **) data);
 
     return libswd_memap_read_int_csw(libswdctx, operation, addr, count, data,
@@ -603,8 +603,8 @@ int libswd_memap_read_int_32(libswd_ctx_t *libswdctx, libswd_operation_t operati
 int libswd_memap_write_char(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, char *data)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_write_char(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entering libswd_memap_write_char(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, **data=%p)...",
+               (void *) libswdctx, operation,
                addr, count, (void *) data);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
@@ -739,8 +739,8 @@ int libswd_memap_write_char_csw(libswd_ctx_t *libswdctx, libswd_operation_t oper
                                 int csw)
 {
     ESP_LOGD(TAG, 
-               "Entring libswd_memap_write_char_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p, csw=0x%X)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entring libswd_memap_write_char_csw(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, **data=%p, csw=0x%X)...",
+               (void *) libswdctx, operation,
                addr, count, (void **) data, csw);
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
     if (operation != LIBSWD_OPERATION_ENQUEUE && operation != LIBSWD_OPERATION_EXECUTE)
@@ -800,8 +800,8 @@ int libswd_memap_write_char_csw(libswd_ctx_t *libswdctx, libswd_operation_t oper
 int libswd_memap_write_char_32(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, char *data)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_write_char_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entering libswd_memap_write_char_32(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, **data=%p)...",
+               (void *) libswdctx, operation,
                addr, count, (void **) data);
 
     return libswd_memap_write_char_csw(libswdctx, operation, addr, count, data,
@@ -822,8 +822,8 @@ int libswd_memap_write_char_32(libswd_ctx_t *libswdctx, libswd_operation_t opera
 int libswd_memap_write_int(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, int *data)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_write_int(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entering libswd_memap_write_int(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, **data=%p)...",
+               (void *) libswdctx, operation,
                addr, count, (void *) data);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
@@ -912,8 +912,8 @@ int libswd_memap_write_int_csw(libswd_ctx_t *libswdctx, libswd_operation_t opera
                                int csw)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_write_int_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p, csw=0x%X)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entering libswd_memap_write_int_csw(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, **data=%p, csw=0x%X)...",
+               (void *) libswdctx, operation,
                addr, count, (void **) data, csw);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
@@ -967,8 +967,8 @@ int libswd_memap_write_int_csw(libswd_ctx_t *libswdctx, libswd_operation_t opera
 int libswd_memap_write_int_32(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, int *data)
 {
     ESP_LOGD(TAG, 
-               "Entering libswd_memap_write_int_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...",
-               (void *) libswdctx, libswd_operation_string(operation),
+               "Entering libswd_memap_write_int_32(*libswdctx=%p, operation=0x%x, addr=0x%08X, count=0x%08X, **data=%p)...",
+               (void *) libswdctx, operation,
                addr, count, (void **) data);
 
     return libswd_memap_write_int_csw(libswdctx, operation, addr, count, data,

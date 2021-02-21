@@ -69,7 +69,6 @@ libswd_ctx_t *libswd_init(void)
     libswdctx->config.initialized = LIBSWD_TRUE;
     libswdctx->config.trnlen = LIBSWD_TURNROUND_DEFAULT_VAL;
     libswdctx->config.maxcmdqlen = LIBSWD_CMDQLEN_DEFAULT;
-    libswdctx->config.loglevel = LIBSWD_LOGLEVEL_DEFAULT;
     libswdctx->config.autofixerrors = LIBSWD_AUTOFIX_DEFAULT;
     ESP_LOGI(TAG, "LibSWD initialised");
     return libswdctx;

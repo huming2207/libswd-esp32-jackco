@@ -53,8 +53,7 @@
 int libswd_debug_detect(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 {
     ESP_LOGD(TAG, 
-               "Executing libswd_debug_detect(*libswdctx=%p, operation=%s)", (void *) libswdctx,
-               libswd_operation_string(operation));
+               "Executing libswd_debug_detect(*libswdctx=%p, operation=0x%x)", (void *) libswdctx, operation);
 
     if (!libswdctx) return LIBSWD_ERROR_NULLCONTEXT;
     int retval = 0, cpuid;
@@ -82,8 +81,7 @@ int libswd_debug_detect(libswd_ctx_t *libswdctx, libswd_operation_t operation)
         return LIBSWD_ERROR_UNSUPPORTED;
     }
     ESP_LOGD(TAG, 
-               "libswd_debug_detect(*libswdctx=%p, operation=%s) execution OK...", (void *) libswdctx,
-               libswd_operation_string(operation));
+               "libswd_debug_detect(*libswdctx=%p, operation=0x%x) execution OK...", (void *) libswdctx, operation);
     return LIBSWD_OK;
 }
 

@@ -116,8 +116,7 @@ int libswd_drv_transmit(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd)
             if (res >= 0) {
                 libswdctx->log.write.request = cmd->request;
                 // Log human-readable request fields for easier transmission debug.
-                ESP_LOGD(TAG,  "Sending Request: %s", \
-     libswd_request_string(libswdctx, cmd->request));
+                ESP_LOGD(TAG,  "Sending Request: 0x%x", cmd->request);
             }
             break;
 
