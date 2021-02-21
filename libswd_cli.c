@@ -48,15 +48,15 @@
 int libswd_cli_print_usage(libswd_ctx_t *libswdctx)
 {
  if (libswdctx==NULL) return LIBSWD_ERROR_NULLPOINTER;
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N: Available LibSWD CLI commands:\n");
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [h]elp / [?]\n");
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [i]nit [dap]|memap|debug\n");
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [l]oglevel <newloglevel>\n");
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [r]ead [d]ap/[a]p 0xAddress\n");
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [w]rite [d]ap/[a]p 0xAddress 0x32BitData\n");
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [r]ead [m]emap 0xAddress <0xCount>|4 <filename>\n");
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [w]rite [m]emap 0xAddress 0xData[]|filename\n");
- libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "\n");
+ libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N: Available LibSWD CLI commands:");
+ libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [h]elp / [?]");
+ libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [i]nit [dap]|memap|debug");
+ libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [l]oglevel <newloglevel>");
+ libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [r]ead [d]ap/[a]p 0xAddress");
+ libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [w]rite [d]ap/[a]p 0xAddress 0x32BitData");
+ libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [r]ead [m]emap 0xAddress <0xCount>|4 <filename>");
+ libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N:  [w]rite [m]emap 0xAddress 0xData[]|filename");
+ libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "");
  return LIBSWD_OK;
 }
 
@@ -69,7 +69,7 @@ int libswd_cli_print_usage(libswd_ctx_t *libswdctx)
 int libswd_cli(libswd_ctx_t *libswdctx, char *command)
 {
  libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-            "LIBSWD_D: libswd_cli(libswdctx=@%p, command=@%p/\"%s\"): Entring function...\n",
+            "libswd_cli(libswdctx=@%p, command=@%p/\"%s\"): Entring function...",
             (void*)libswdctx, (void*)command, command);
 
  if (libswdctx==NULL) return LIBSWD_ERROR_NULLCONTEXT;
@@ -100,7 +100,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
     if (cmd==NULL)
     {
      libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                "LIBSWD_I: libswd_cli(): Current loglevel is: %d (%s)\n",
+                "libswd_cli(): Current loglevel is: %d (%s)",
                 (int)libswdctx->config.loglevel,
                 libswd_log_level_string(libswdctx->config.loglevel) );
     }
@@ -114,7 +114,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
       if (retval<0)
       {
        libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                  "LIBSWD_E: libswd_cli(): Cannot set loglevel %d/%s): %s.\n",
+                  "libswd_cli(): Cannot set loglevel %d/%s): %s.",
                   loglevel_new,
                   libswd_log_level_string((libswd_loglevel_t)loglevel_new),
                   libswd_error_string(retval) );
@@ -123,12 +123,12 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
      else if (errno!=LIBSWD_OK)
      {
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                 "LIBSWD_I: libswd_cli(): Current loglevel is: %d (%s)\n",
+                 "libswd_cli(): Current loglevel is: %d (%s)",
                  (int)libswdctx->config.loglevel,
                  libswd_log_level_string(libswdctx->config.loglevel) );
      }
     }
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LOGLEVEL=%d/%s\n",
+    libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LOGLEVEL=%d/%s",
                (int)libswdctx->config.loglevel,
                libswd_log_level_string(libswdctx->config.loglevel));
     continue;
@@ -146,12 +146,12 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
      if (retval<0)
      {
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                 "LIBSWD_E: libswd_cli(): Cannot Initialize DAP! (%s)\n",
+                 "libswd_cli(): Cannot Initialize DAP! (%s)",
                  libswd_error_string(retval) );
        libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL,
-                 "LIBSWD_N: libswd_cli(): DAP INIT ERROR!\n" );
+                 "LIBSWD_N: libswd_cli(): DAP INIT ERROR!" );
      } else libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL,
-                       "LIBSWD_N: DAP INIT OK! IDCODE=0x%08X/%s\n",
+                       "LIBSWD_N: DAP INIT OK! IDCODE=0x%08X/%s",
                        *idcode, libswd_bin32_string(idcode) );
     }
     else if ( strncmp(cmd,"m",1)==0 || strncmp(cmd,"memap",5)==0 )
@@ -160,9 +160,9 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
      if (retval<0)
      {
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                 "LIBSWD_E: libswd_cli(): MEM-AP INIT ERROR!\n");
+                 "libswd_cli(): MEM-AP INIT ERROR!");
      } else  libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL,
-                        "LIBSWD_N: MEM-AP INIT OK!\n");
+                        "LIBSWD_N: MEM-AP INIT OK!");
     }
     else if ( strncmp(cmd,"de",2)==0 || strncmp(cmd,"debug",5)==0 )
     {
@@ -170,9 +170,9 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
      if (retval<0)
      {
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                 "LIBSWD_E: libswd_cli(): DEBUG INIT ERROR!\n" );
+                 "libswd_cli(): DEBUG INIT ERROR!" );
      } else libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL,
-                       "LIBSWD_N: DEBUG INIT OK!\n");
+                       "LIBSWD_N: DEBUG INIT OK!");
     }
     continue;
    }
@@ -187,7 +187,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
      if (retval<0)
      {
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                 "LIBSWD_E: libswd_cli(): DEBUG HALT ERROR! (%s).\n",
+                 "libswd_cli(): DEBUG HALT ERROR! (%s).",
                  libswd_error_string(retval) );
      }
     }
@@ -197,7 +197,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
      if (retval<0)
      {
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                 "LIBSWD_E: libswd_cli(); DEBUG RUN ERROR! (%s)\n",
+                 "libswd_cli(); DEBUG RUN ERROR! (%s)",
                  libswd_error_string(retval) );
      }
     }
@@ -234,7 +234,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
                             addrstart, &data32 );
       if (retval<0) goto libswd_cli_error;
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL,
-                 "LIBSWD_N: DP[0x%08X]=0x%08X\n",
+                 "LIBSWD_N: DP[0x%08X]=0x%08X",
                  addrstart, *data32 );
       break;
      case 'a':
@@ -242,7 +242,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
                             addrstart, &data32 );
       if (retval<0) goto libswd_cli_error;
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL,
-                 "LIBSWD_N: AP[0x%08X]=0x%08X\n",
+                 "LIBSWD_N: AP[0x%08X]=0x%08X",
                  addrstart, *data32 );
       break;
      case 'm':
@@ -276,7 +276,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
        {
         libswdctx->membuf.size=0;
         libswd_log(libswdctx, LIBSWD_ERROR_OUTOFMEM,
-                   "LIBSWD_E: libswd_cli(): Cannot (re)allocate memory buffer!\n");
+                   "libswd_cli(): Cannot (re)allocate memory buffer!");
         retval=LIBSWD_ERROR_OUTOFMEM;
         goto libswd_cli_error;
        } else memset((void*)libswdctx->membuf.data, 0xFF, libswdctx->membuf.size);
@@ -294,20 +294,20 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
        if (!fp)
        {
         libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                   "LIBSWD_W: libswd_cli(): Cannot open '%s' data file!\n",
+                   "libswd_cli(): Cannot open '%s' data file!",
                    filename, strerror(errno) );
         break;
        }
        retval=fwrite(libswdctx->membuf.data, sizeof(char), count, fp);
        if (!retval)
         libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                   "LIBSWD_W: libswd_cli(): Cannot write to data file '%s' (%s)!\n",
+                   "libswd_cli(): Cannot write to data file '%s' (%s)!",
                    filename, strerror(errno) );
        retval=fclose(fp);
        if (retval)
        {
         libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                   "LIBSWD_W: libswd_cli(): Cannot close data file '%s' (%s)!\n",
+                   "libswd_cli(): Cannot close data file '%s' (%s)!",
                    filename, strerror(errno) );
        }
       }
@@ -321,11 +321,11 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
        for (j=0;j<16&&i+j<libswdctx->membuf.size;j++) printf("%c", isprint(libswdctx->membuf.data[i+j])?libswdctx->membuf.data[i+j]:'.');
        if (j<16) for (;j<16;j++) printf(".");
       }
-      printf("\n");
+      printf("");
       break;
      default:
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                 "LIBSWD_E: libswd_cli(): Unknown Access Port given!\n");
+                 "libswd_cli(): Unknown Access Port given!");
       goto libswd_cli_syntaxerror;
     }
     continue;
@@ -371,7 +371,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
                             addrstart, &data );
       if (retval<0) goto libswd_cli_error;
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL,
-                 "LIBSWD_N: DP[0x%08X]=0x%08X\n",
+                 "LIBSWD_N: DP[0x%08X]=0x%08X",
                  addrstart, data );
       break;
      case 'a':
@@ -389,7 +389,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
       retval=libswd_ap_read(libswdctx, LIBSWD_OPERATION_EXECUTE, addrstart, &data32);
       if (retval<0) goto libswd_cli_error;
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL,
-                 "LIBSWD_N: AP[0x%08X]=0x%08X\n",
+                 "LIBSWD_N: AP[0x%08X]=0x%08X",
                  addrstart, *data32 );
       break;
      case 'm':
@@ -420,7 +420,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
        {
         libswdctx->membuf.size=0;
         libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                   "LIBSWD_E: libswd_cli(): Cannot allocate memory for data, aborting!\n" );
+                   "libswd_cli(): Cannot allocate memory for data, aborting!" );
         retval=LIBSWD_ERROR_OUTOFMEM;
         goto libswd_cli_syntaxerror;
        } else memset((void*)libswdctx->membuf.data, 0xFF, libswdctx->membuf.size);
@@ -453,7 +453,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
         }
        }
        libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                  "LIBSWD_I: libswd_cli(): Parsed %d bytes of data into memory buffer!\n",
+                  "libswd_cli(): Parsed %d bytes of data into memory buffer!",
                   libswdctx->membuf.size );
       }
       // Given data parameter is a filename. Load file into memory.
@@ -466,7 +466,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
        if (!fp)
        {
         libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                   "LIBSWD_E: libswd_cli(): Cannot open '%s' data file (%s), aborting!\n",
+                   "libswd_cli(): Cannot open '%s' data file (%s), aborting!",
                    filename, strerror(errno));
         return LIBSWD_ERROR_FILE;
        }
@@ -480,7 +480,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
        {
         libswdctx->membuf.size=0;
         libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                   "LIBSWD_E: libswd_cli(): Cannot allocate memory to load '%s' file, aborting!\n",
+                   "libswd_cli(): Cannot allocate memory to load '%s' file, aborting!",
                    filename );
         res=LIBSWD_ERROR_OUTOFMEM;
         goto libswd_cli_write_memap_file_load_error;
@@ -490,7 +490,7 @@ int libswd_cli(libswd_ctx_t *libswdctx, char *command)
        if (!retval)
        {
         libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                   "LIBSWD_E: libswd_cli(): Cannot load data from '%s' file (%s), aborting!\n",
+                   "libswd_cli(): Cannot load data from '%s' file (%s), aborting!",
                    filename, strerror(errno) );
         res=LIBSWD_ERROR_FILE;
         goto libswd_cli_write_memap_file_load_error;
@@ -500,14 +500,14 @@ libswd_cli_write_memap_file_load_error:
        if (retval)
        {
         libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                   "LIBSWD_E: libswd_cli(): Cannot close data file '%s' (%s), aborting!\n",
+                   "libswd_cli(): Cannot close data file '%s' (%s), aborting!",
                    filename, strerror(errno) );
         return LIBSWD_ERROR_FILE;
        }
        if (res!=LIBSWD_OK) return res;
 //libswd_cli_write_memap_file_load_ok:
        libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                  "LIBSWD_I: libswd_cli(): %d bytes of data from '%s' file loaded!\n",
+                  "libswd_cli(): %d bytes of data from '%s' file loaded!",
                   libswdctx->membuf.size, filename );
       }
       // At this point data are in membuf, sent them to MEM-AP.
@@ -525,11 +525,11 @@ libswd_cli_write_memap_file_load_error:
        for (j=0;j<16&&i+j<libswdctx->membuf.size;j++) printf("%c", isprint(libswdctx->membuf.data[i+j])?libswdctx->membuf.data[i+j]:'.');
        if (j<16) for (;j<16;j++) printf(".");
       }
-      printf("\n");
+      printf("");
       break;
      default:
       libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                 "LIBSWD_E: libswd_cli(): Unknown Access Port given!\n");
+                 "libswd_cli(): Unknown Access Port given!");
       goto libswd_cli_syntaxerror;
     }
     break;
@@ -538,7 +538,7 @@ libswd_cli_write_memap_file_load_error:
    else
    {
     libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-               "LIBSWD_E: libswd_cli(): %s.\n",
+               "libswd_cli(): %s.",
                libswd_error_string(LIBSWD_ERROR_CLISYNTAX) );
                libswd_cli_print_usage(libswdctx);
     return LIBSWD_ERROR_CLISYNTAX;
@@ -552,10 +552,10 @@ libswd_cli_syntaxerror:
  retval=LIBSWD_ERROR_CLISYNTAX;
 libswd_cli_error:
  libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-            "LIBSWD_E: libswd_cli(): %s.\n",
+            "libswd_cli(): %s.",
             libswd_error_string(retval) );
  libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-            "LIBSWD_D: libswd_cli(): CMD=%s COMMAND=%s.\n",
+            "libswd_cli(): CMD=%s COMMAND=%s.",
             cmd, command );
  return retval;
 };

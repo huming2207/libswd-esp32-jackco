@@ -35,6 +35,9 @@
 /** \file libswd_debug.c Debug Related Routines. */
 
 #include <libswd.h>
+#include <esp_log.h>
+
+#define TAG "libswd_debug"
 
 /*******************************************************************************
  * \defgroup libswd_debug High-level Debug operations using SWD DAP.
@@ -49,8 +52,8 @@
  */
 int libswd_debug_detect(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_I: Executing libswd_debug_detect(*libswdctx=%p, operation=%s)\n", (void *) libswdctx,
+    ESP_LOGD(TAG, 
+               "Executing libswd_debug_detect(*libswdctx=%p, operation=%s)", (void *) libswdctx,
                libswd_operation_string(operation));
 
     if (!libswdctx) return LIBSWD_ERROR_NULLCONTEXT;
@@ -68,8 +71,8 @@ int libswd_debug_detect(libswd_ctx_t *libswdctx, libswd_operation_t operation)
     for (i = 0; i < LIBSWD_NUM_SUPPORTED_CPUIDS; i++) {
         if (cpuid == libswd_arm_debug_CPUID[i].default_value) {
             libswdctx->log.debug.cpuid = libswd_arm_debug_CPUID[i];
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                       "LIBSWD_I: libswd_debug_detect(): Found supported CPUID=0x%08X (%s).\n",
+            ESP_LOGI(TAG, 
+                       "libswd_debug_detect(): Found supported CPUID=0x%08X (%s).",
                        libswd_arm_debug_CPUID[i].default_value, libswd_arm_debug_CPUID[i].name);
             break;
         }
@@ -78,8 +81,8 @@ int libswd_debug_detect(libswd_ctx_t *libswdctx, libswd_operation_t operation)
         libswdctx->log.debug.cpuid.default_value = cpuid;
         return LIBSWD_ERROR_UNSUPPORTED;
     }
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_I: libswd_debug_detect(*libswdctx=%p, operation=%s) execution OK...\n", (void *) libswdctx,
+    ESP_LOGD(TAG, 
+               "libswd_debug_detect(*libswdctx=%p, operation=%s) execution OK...", (void *) libswdctx,
                libswd_operation_string(operation));
     return LIBSWD_OK;
 }
@@ -122,13 +125,13 @@ int libswd_debug_halt(libswd_ctx_t *libswdctx, libswd_operation_t operation)
         retval = libswd_memap_read_int_32(libswdctx, operation, LIBSWD_ARM_DEBUG_DHCSR_ADDR, 1, &dbgdhcsr);
         if (retval < 0) return retval;
         if (dbgdhcsr & LIBSWD_ARM_DEBUG_DHCSR_SHALT) {
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO, "LIBSWD_I: libswd_debug_halt(): DHCSR=0x%08X\n", dbgdhcsr);
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N: libswd_debug_halt(): TARGET HALT OK!\n");
+            ESP_LOGI(TAG,  "libswd_debug_halt(): DHCSR=0x%08X", dbgdhcsr);
+            ESP_LOGI(TAG,  "LIBSWD_N: libswd_debug_halt(): TARGET HALT OK!");
             libswdctx->log.debug.dhcsr = dbgdhcsr;
             return LIBSWD_OK;
         }
     }
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR, "LIBSWD_E: libswd_debug_halt(): TARGET HALT ERROR!\n");
+    ESP_LOGE(TAG,  "libswd_debug_halt(): TARGET HALT ERROR!");
     return LIBSWD_ERROR_MAXRETRY;
 }
 
@@ -157,13 +160,13 @@ int libswd_debug_run(libswd_ctx_t *libswdctx, libswd_operation_t operation)
                                           &dbgdhcsr);
         if (retval < 0) return retval;
         if (!(dbgdhcsr & LIBSWD_ARM_DEBUG_DHCSR_SHALT)) {
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N: libswd_debug_run(): TARGET RUN OK!\n");
+            ESP_LOGI(TAG,  "LIBSWD_N: libswd_debug_run(): TARGET RUN OK!");
             libswdctx->log.debug.dhcsr = dbgdhcsr;
             return LIBSWD_OK;
         }
 
     }
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR, "LIBSWD_E: libswd_debug_run(): TARGET RUN ERROR!\n");
+    ESP_LOGE(TAG,  "libswd_debug_run(): TARGET RUN ERROR!");
     return LIBSWD_ERROR_MAXRETRY;
 }
 

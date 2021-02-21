@@ -36,6 +36,9 @@
 
 #include <libswd.h>
 #include <config.h>
+#include <esp_log.h>
+
+#define TAG "libswd_core"
 
 /*******************************************************************************
  * \defgroup libswd_core Library and Context (de)initialization routines.
@@ -68,7 +71,7 @@ libswd_ctx_t *libswd_init(void)
     libswdctx->config.maxcmdqlen = LIBSWD_CMDQLEN_DEFAULT;
     libswdctx->config.loglevel = LIBSWD_LOGLEVEL_DEFAULT;
     libswdctx->config.autofixerrors = LIBSWD_AUTOFIX_DEFAULT;
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_NORMAL, "LIBSWD_N\n");
+    ESP_LOGI(TAG, "LibSWD initialised");
     return libswdctx;
 }
 

@@ -71,12 +71,12 @@ int* idcode_ptr = &idcode;
 ets_printf("[libswd_dap_detect]");
 auto dap_res = libswd_dap_detect(libswdctx, LIBSWD_OPERATION_EXECUTE, &idcode_ptr);
 if(LIBSWD_OK != dap_res) {
-    ets_printf("[libswd_dap_detect] failed with code %d\n", dap_res);
+    ets_printf("[libswd_dap_detect] failed with code %d", dap_res);
     return; // Warning, this example does not close handles correctly
 }
 
 char buff[128];
-sprintf(buff, "Detected IDCODE: 0x%08X\n", *idcode_ptr);
+sprintf(buff, "Detected IDCODE: 0x%08X", *idcode_ptr);
 ets_printf("%s", buff);
 ```
 

@@ -103,7 +103,7 @@ int libswd_log_level_set(libswd_ctx_t *libswdctx, libswd_loglevel_t loglevel)
 
     libswdctx->config.loglevel = loglevel;
     libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: libswd_log_level_set(libswdctx=0x%p, loglevel[%d..%d]=%d/%s)\n", (void *) libswdctx,
+               "libswd_log_level_set(libswdctx=0x%p, loglevel[%d..%d]=%d/%s)", (void *) libswdctx,
                LIBSWD_LOGLEVEL_MIN, LIBSWD_LOGLEVEL_MAX, loglevel, libswd_log_level_string(loglevel));
     return LIBSWD_OK;
 }
@@ -143,7 +143,7 @@ const char *libswd_log_level_string(libswd_loglevel_t loglevel)
     return "UNKNOWN_LOGLEVEL";
 };
 
-/** Helper function to produce operation name string for logging purposes.
+/** Helper function to produce operation name string for logging  purposes.
  * \param operation is the libswd_operation_t code to return as string.
  * \return char* array with operation name string.
  */

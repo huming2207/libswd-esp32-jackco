@@ -35,6 +35,9 @@
 /** \file libswd_memap.c MEM-AP related routines. */
 
 #include <libswd.h>
+#include <esp_log.h>
+
+#define TAG "libswd_memap"
 
 /*******************************************************************************
  * \defgroup libswd_memap High-level MEM-AP (Memory Access Port) operations.
@@ -51,8 +54,8 @@
  */
 int libswd_memap_init(libswd_ctx_t *libswdctx, libswd_operation_t operation)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Executing libswd_memap_init(*libswdctx=%p, operation=%s)...\n",
+    ESP_LOGD(TAG, 
+               "Executing libswd_memap_init(*libswdctx=%p, operation=%s)...",
                (void *) libswdctx, libswd_operation_string(operation));
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
@@ -77,8 +80,8 @@ int libswd_memap_init(libswd_ctx_t *libswdctx, libswd_operation_t operation)
         if (res < 0) goto libswd_memap_init_error;
         libswdctx->log.memap.idr = *memapidr;
     }
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-               "LIBSWD_I: libswd_memap_init(): MEM-AP  IDR=0x%08X\n",
+    ESP_LOGI(TAG, 
+               "libswd_memap_init(): MEM-AP  IDR=0x%08X",
                libswdctx->log.memap.idr);
 
     // Check Debug BASE Address Register, use cached value if possible.
@@ -87,8 +90,8 @@ int libswd_memap_init(libswd_ctx_t *libswdctx, libswd_operation_t operation)
         if (res < 0) goto libswd_memap_init_error;
         libswdctx->log.memap.base = *memapbase;
     }
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-               "LIBSWD_I: libswd_memap_init(): MEM-AP BASE=0x%08X\n",
+    ESP_LOGI(TAG, 
+               "libswd_memap_init(): MEM-AP BASE=0x%08X",
                libswdctx->log.memap.base);
 
     // Setup the CSW (MEM-AP Control and Status) register.
@@ -105,8 +108,8 @@ int libswd_memap_init(libswd_ctx_t *libswdctx, libswd_operation_t operation)
     res = libswd_ap_read(libswdctx, operation, LIBSWD_MEMAP_CSW_ADDR, &memapcswp);
     if (res < 0) goto libswd_memap_init_error;
     libswdctx->log.memap.csw = (*memapcswp);
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-               "LIBSWD_I: libswd_memap_init(): MEM-AP  CSW=0x%08X\n",
+    ESP_LOGI(TAG, 
+               "libswd_memap_init(): MEM-AP  CSW=0x%08X",
                libswdctx->log.memap.csw);
 
     // Mark MEM-AP as configured.
@@ -115,8 +118,8 @@ int libswd_memap_init(libswd_ctx_t *libswdctx, libswd_operation_t operation)
     return LIBSWD_OK;
 
     libswd_memap_init_error:
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-               "LIBSWD_E: libswd_memap_init(): Cannot initialize MEM-AP (%s)!\n",
+    ESP_LOGE(TAG, 
+               "libswd_memap_init(): Cannot initialize MEM-AP (%s)!",
                libswd_error_string(res));
     return res;
 }
@@ -134,8 +137,8 @@ int libswd_memap_init(libswd_ctx_t *libswdctx, libswd_operation_t operation)
  */
 int libswd_memap_setup(libswd_ctx_t *libswdctx, libswd_operation_t operation, int csw, int tar)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_setup(*libswdctx=%p, operation=%s, csw=0x%08X, tar=0x%08X)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_setup(*libswdctx=%p, operation=%s, csw=0x%08X, tar=0x%08X)...",
                (void *) libswdctx, libswd_operation_string(operation), csw, tar);
 
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
@@ -159,7 +162,7 @@ int libswd_memap_setup(libswd_ctx_t *libswdctx, libswd_operation_t operation, in
         if (res < 0) goto libswd_memap_setup_error;
         // Read-back and cache CSW value.
         res = libswd_ap_read(libswdctx, operation, LIBSWD_MEMAP_CSW_ADDR, &memapcswp);
-        // libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO, "libswd_ap_read returns 0x%x, op %d, ctx %s, memapcswp %s", res, operation, libswdctx ? "not null" : "null", memapcswp ? "not null" : "null");
+        // ESP_LOGI(TAG,  "libswd_ap_read returns 0x%x, op %d, ctx %s, memapcswp %s", res, operation, libswdctx ? "not null" : "null", memapcswp ? "not null" : "null");
         if (res < 0) goto libswd_memap_setup_error;
         libswdctx->log.memap.csw = (*memapcswp);
     }
@@ -178,8 +181,8 @@ int libswd_memap_setup(libswd_ctx_t *libswdctx, libswd_operation_t operation, in
     return LIBSWD_OK;
 
     libswd_memap_setup_error:
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-               "LIBSWD_E: libswd_memap_setup(): Cannot setup MEM-AP (%s)!\n",
+    ESP_LOGE(TAG, 
+               "libswd_memap_setup(): Cannot setup MEM-AP (%s)!",
                libswd_error_string(res));
     return res;
 }
@@ -197,8 +200,8 @@ int libswd_memap_setup(libswd_ctx_t *libswdctx, libswd_operation_t operation, in
  */
 int libswd_memap_read_char(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, char *data)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_read_char(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_read_char(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void *) data);
 
@@ -207,8 +210,6 @@ int libswd_memap_read_char(libswd_ctx_t *libswdctx, libswd_operation_t operation
         return LIBSWD_ERROR_BADOPCODE;
 
     int i, loc, res = 0, accsize = 0, *memapdrw;
-    float tdeltam;
-    struct timeval tstart, tstop;
 
     // Initialize MEM-AP if necessary.
     if (!libswdctx->log.memap.initialized) {
@@ -239,8 +240,6 @@ int libswd_memap_read_char(libswd_ctx_t *libswdctx, libswd_operation_t operation
         goto libswd_memap_read_char_error;
     }
 
-    // Mark start time for transfer speed measurement.
-    gettimeofday(&tstart, NULL);
 
     // Perform word-by-word read operation and implode result into char array.
     if (!(libswdctx->log.memap.csw & LIBSWD_MEMAP_CSW_ADDRINC)) {
@@ -253,13 +252,11 @@ int libswd_memap_read_char(libswd_ctx_t *libswdctx, libswd_operation_t operation
             // see Data byte-laning in the ARM debug interface v5 documentation
             // note: this only works for little endian systems.
             drw_shift = 8 * (loc % 4);
-            // Measure transfer speed.
-            gettimeofday(&tstop, NULL);
-            tdeltam = fabsf((tstop.tv_sec - tstart.tv_sec) * 1000 + (tstop.tv_usec - tstart.tv_usec) / 1000);
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                       "LIBSWD_I: libswd_memap_read_char() reading address 0x%08X (speed %fKB/s)\r",
-                       loc, count / tdeltam);
-            fflush(0);
+
+            ESP_LOGI(TAG, 
+                       "libswd_memap_read_char() reading address 0x%08X",
+                       loc);
+            
             // Pass address to TAR register.
             res = libswd_ap_write(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_MEMAP_TAR_ADDR, &loc);
             if (res < 0) goto libswd_memap_read_char_error;
@@ -272,7 +269,7 @@ int libswd_memap_read_char(libswd_ctx_t *libswdctx, libswd_operation_t operation
             tmp = *memapdrw >>= drw_shift;
             memcpy((void *) data + i, &tmp, accsize);
         }
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO, "\n");
+        
     } else {
         // Use TAR Auto Increment (faster).
         // TAR auto increment is only guaranteed to work on the bottom 10 bits
@@ -305,13 +302,10 @@ int libswd_memap_read_char(libswd_ctx_t *libswdctx, libswd_operation_t operation
                 libswdctx->log.memap.tar = loc;
             }
 
-            // Measure transfer speed.
-            gettimeofday(&tstop, NULL);
-            tdeltam = fabsf((tstop.tv_sec - tstart.tv_sec) * 1000 + (tstop.tv_usec - tstart.tv_usec) / 1000);
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                       "LIBSWD_I: libswd_memap_read_char() reading address 0x%08X (speed %fKB/s)\r",
-                       loc, count / tdeltam);
-            fflush(0);
+            ESP_LOGI(TAG,
+                       "libswd_memap_read_char() reading address 0x%08X",
+                       loc);
+            
 
             // Read data from the DRW register.
             res = libswd_ap_read(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_MEMAP_DRW_ADDR, &memapdrw);
@@ -322,14 +316,14 @@ int libswd_memap_read_char(libswd_ctx_t *libswdctx, libswd_operation_t operation
             tmp = *memapdrw >>= drw_shift;
             memcpy((void *) data + i, &tmp, accsize);
         }
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO, "\n");
+        
     }
 
     return LIBSWD_OK;
 
     libswd_memap_read_char_error:
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-               "\nLIBSWD_E: libswd_memap_read_char(): %s\n",
+    ESP_LOGE(TAG, 
+               "libswd_memap_read_char(): %s",
                libswd_error_string(res));
     return res;
 }
@@ -349,8 +343,8 @@ int libswd_memap_read_char(libswd_ctx_t *libswdctx, libswd_operation_t operation
 int libswd_memap_read_char_csw(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, char *data,
                                int csw)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_read_char_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p, csw=0x%X)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_read_char_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p, csw=0x%X)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void **) data, csw);
 
@@ -395,8 +389,8 @@ int libswd_memap_read_char_csw(libswd_ctx_t *libswdctx, libswd_operation_t opera
     return LIBSWD_OK;
 
     libswd_memap_read_char_csw_error:
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-               "\nLIBSWD_E: libswd_memap_read_char_csw(): %s\n",
+    ESP_LOGE(TAG, 
+               "libswd_memap_read_char_csw(): %s",
                libswd_error_string(res));
     return res;
 }
@@ -414,8 +408,8 @@ int libswd_memap_read_char_csw(libswd_ctx_t *libswdctx, libswd_operation_t opera
  */
 int libswd_memap_read_char_32(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, char *data)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_read_char_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_read_char_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void **) data);
 
@@ -434,8 +428,8 @@ int libswd_memap_read_char_32(libswd_ctx_t *libswdctx, libswd_operation_t operat
  */
 int libswd_memap_read_int(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, int *data)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_read_int(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_read_int(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void **) data);
 
@@ -444,8 +438,6 @@ int libswd_memap_read_int(libswd_ctx_t *libswdctx, libswd_operation_t operation,
         return LIBSWD_ERROR_BADOPCODE;
 
     int i, loc, res, *memapdrw;
-    float tdeltam;
-    struct timeval tstart, tstop;
 
     // Initialize MEM-AP if necessary.
     if (!libswdctx->log.memap.initialized) {
@@ -453,21 +445,15 @@ int libswd_memap_read_int(libswd_ctx_t *libswdctx, libswd_operation_t operation,
         if (res < 0) goto libswd_memap_read_int_error;
     }
 
-    // Mark start time for transfer speed measurement.
-    gettimeofday(&tstart, NULL);
-
     // Perform word-by-word read operation and store result into int array.
     if (!(libswdctx->log.memap.csw & LIBSWD_MEMAP_CSW_ADDRINC)) {
         // Use manual TAR incrementation (slower).
         for (i = 0; i < count; i++) {
             loc = addr + i * 4;
-            // Measure transfer speed.
-            gettimeofday(&tstop, NULL);
-            tdeltam = fabsf((tstop.tv_sec - tstart.tv_sec) * 1000 + (tstop.tv_usec - tstart.tv_usec) / 1000);
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                       "LIBSWD_I: libswd_memap_read_int() reading address 0x%08X (speed %fKB/s)\r",
-                       loc, count * 4 / tdeltam);
-            fflush(0);
+            ESP_LOGI(TAG,
+                       "libswd_memap_read_int() reading address 0x%08X",
+                       loc);
+            
             // Pass address to TAR register.
             res = libswd_ap_write(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_MEMAP_TAR_ADDR, &loc);
             if (res < 0) goto libswd_memap_read_int_error;
@@ -478,7 +464,7 @@ int libswd_memap_read_int(libswd_ctx_t *libswdctx, libswd_operation_t operation,
             libswdctx->log.memap.drw = *memapdrw;
             data[i] = *memapdrw;
         }
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO, "\n");
+        
     } else {
         // Use TAR Auto Increment (faster).
         // TAR auto increment is only guaranteed to work on the bottom 10 bits
@@ -500,13 +486,10 @@ int libswd_memap_read_int(libswd_ctx_t *libswdctx, libswd_operation_t operation,
                 libswdctx->log.memap.tar = loc;
             }
 
-            // Measure transfer speed.
-            gettimeofday(&tstop, NULL);
-            tdeltam = fabsf((tstop.tv_sec - tstart.tv_sec) * 1000 + (tstop.tv_usec - tstart.tv_usec) / 1000);
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                       "LIBSWD_I: libswd_memap_read_int() reading address 0x%08X (speed %fKB/s)\r",
-                       loc, count * 4 / tdeltam);
-            fflush(0);
+            ESP_LOGI(TAG, 
+                       "libswd_memap_read_int() reading address 0x%08X",
+                       loc);
+            
 
             // Read data from the DRW register.
             res = libswd_ap_read(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_MEMAP_DRW_ADDR, &memapdrw);
@@ -514,14 +497,14 @@ int libswd_memap_read_int(libswd_ctx_t *libswdctx, libswd_operation_t operation,
             libswdctx->log.memap.drw = *memapdrw;
             data[i] = *memapdrw;
         }
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO, "\n");
+        
     }
 
     return LIBSWD_OK;
 
     libswd_memap_read_int_error:
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-               "\nLIBSWD_E: libswd_memap_read_int(): %s\n",
+    ESP_LOGE(TAG, 
+               "libswd_memap_read_int(): %s",
                libswd_error_string(res));
     return res;
 }
@@ -540,8 +523,8 @@ int libswd_memap_read_int(libswd_ctx_t *libswdctx, libswd_operation_t operation,
 int libswd_memap_read_int_csw(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, int *data,
                               int csw)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_read_int_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p, csw=0x%X)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_read_int_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p, csw=0x%X)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void **) data, csw);
 
@@ -579,8 +562,8 @@ int libswd_memap_read_int_csw(libswd_ctx_t *libswdctx, libswd_operation_t operat
     return res;
 
     libswd_memap_read_int_csw_error:
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-               "\nLIBSWD_E: libswd_memap_read_int_csw(): %s\n",
+    ESP_LOGE(TAG, 
+               "libswd_memap_read_int_csw(): %s",
                libswd_error_string(res));
     return res;
 }
@@ -598,8 +581,8 @@ int libswd_memap_read_int_csw(libswd_ctx_t *libswdctx, libswd_operation_t operat
  */
 int libswd_memap_read_int_32(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, int *data)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_read_int_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_read_int_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, *data=%p)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void **) data);
 
@@ -619,8 +602,8 @@ int libswd_memap_read_int_32(libswd_ctx_t *libswdctx, libswd_operation_t operati
  */
 int libswd_memap_write_char(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, char *data)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_write_char(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_write_char(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void *) data);
 
@@ -629,8 +612,6 @@ int libswd_memap_write_char(libswd_ctx_t *libswdctx, libswd_operation_t operatio
         return LIBSWD_ERROR_BADOPCODE;
 
     int i, loc, res = 0, accsize = 0;
-    float tdeltam;
-    struct timeval tstart, tstop;
 
     // Initialize MEM-AP if neessary.
     if (!libswdctx->log.memap.initialized) {
@@ -661,8 +642,6 @@ int libswd_memap_write_char(libswd_ctx_t *libswdctx, libswd_operation_t operatio
         goto libswd_memap_write_char_error;
     }
 
-    // Mark start time for transfer speed measurement.
-    gettimeofday(&tstart, NULL);
 
     // Perform word-by-word write operation from char array.
     // Use write method that match the CSW AddrInc configuration.
@@ -675,13 +654,10 @@ int libswd_memap_write_char(libswd_ctx_t *libswdctx, libswd_operation_t operatio
             // see Data byte-laning in the ARM debug interface v5 documentation
             // note: this only works for little endian systems.
             drw_shift = 8 * (loc % 4);
-            // Measure transfer speed.
-            gettimeofday(&tstop, NULL);
-            tdeltam = fabsf((tstop.tv_sec - tstart.tv_sec) * 1000 + (tstop.tv_usec - tstart.tv_usec) / 1000);
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                       "LIBSWD_I: libswd_memap_write_char() writing address 0x%08X (speed %fKB/s)\r",
-                       loc, count / tdeltam);
-            fflush(0);
+            ESP_LOGI(TAG, 
+                       "libswd_memap_write_char() writing address 0x%08X",
+                       loc);
+            
             // Pass address to TAR register.
             res = libswd_ap_write(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_MEMAP_TAR_ADDR, &loc);
             if (res < 0) goto libswd_memap_write_char_error;
@@ -725,13 +701,10 @@ int libswd_memap_write_char(libswd_ctx_t *libswdctx, libswd_operation_t operatio
                 libswdctx->log.memap.tar = loc;
             }
 
-            // Measure transfer speed.
-            gettimeofday(&tstop, NULL);
-            tdeltam = fabsf((tstop.tv_sec - tstart.tv_sec) * 1000 + (tstop.tv_usec - tstart.tv_usec) / 1000);
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                       "LIBSWD_I: libswd_memap_write_char() writing address 0x%08X (speed %fKB/s)\r",
-                       loc, count / tdeltam);
-            fflush(0);
+            ESP_LOGI(TAG, 
+                       "libswd_memap_write_char() writing address 0x%08X",
+                       loc);
+            
 
             // apply the data byte-laning shift and write to the DRW register
             memcpy((void *) &libswdctx->log.memap.drw, data + i, accsize);
@@ -740,14 +713,14 @@ int libswd_memap_write_char(libswd_ctx_t *libswdctx, libswd_operation_t operatio
                                   &libswdctx->log.memap.drw);
             if (res < 0) goto libswd_memap_write_char_error;
         }
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO, "\n");
+        
     }
 
     return LIBSWD_OK;
 
     libswd_memap_write_char_error:
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-               "LIBSWD_E: libswd_memap_write_char(): %s\n",
+    ESP_LOGE(TAG, 
+               "libswd_memap_write_char(): %s",
                libswd_error_string(res));
     return res;
 }
@@ -765,8 +738,8 @@ int libswd_memap_write_char(libswd_ctx_t *libswdctx, libswd_operation_t operatio
 int libswd_memap_write_char_csw(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, char *data,
                                 int csw)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entring libswd_memap_write_char_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p, csw=0x%X)...\n",
+    ESP_LOGD(TAG, 
+               "Entring libswd_memap_write_char_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p, csw=0x%X)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void **) data, csw);
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
@@ -809,8 +782,8 @@ int libswd_memap_write_char_csw(libswd_ctx_t *libswdctx, libswd_operation_t oper
     return LIBSWD_OK;
 
     libswd_memap_write_char_csw_error:
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-               "LIBSWD_E: libswd_memap_write_char_csw(): %s\n",
+    ESP_LOGE(TAG, 
+               "libswd_memap_write_char_csw(): %s",
                libswd_error_string(res));
     return res;
 }
@@ -826,8 +799,8 @@ int libswd_memap_write_char_csw(libswd_ctx_t *libswdctx, libswd_operation_t oper
  */
 int libswd_memap_write_char_32(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, char *data)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_write_char_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_write_char_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void **) data);
 
@@ -848,8 +821,8 @@ int libswd_memap_write_char_32(libswd_ctx_t *libswdctx, libswd_operation_t opera
  */
 int libswd_memap_write_int(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, int *data)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_write_int(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_write_int(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void *) data);
 
@@ -858,8 +831,6 @@ int libswd_memap_write_int(libswd_ctx_t *libswdctx, libswd_operation_t operation
         return LIBSWD_ERROR_BADOPCODE;
 
     int i, loc, res = 0;
-    float tdeltam;
-    struct timeval tstart, tstop;
 
     // Initialize MEM-AP if necessary.
     if (!libswdctx->log.memap.initialized) {
@@ -867,21 +838,16 @@ int libswd_memap_write_int(libswd_ctx_t *libswdctx, libswd_operation_t operation
         if (res < 0) goto libswd_memap_write_int_error;
     }
 
-    // Mark start time for transfer speed measurement.
-    gettimeofday(&tstart, NULL);
-
     // Perform word-by-word write operation from int array.
     if (!(libswdctx->log.memap.csw & LIBSWD_MEMAP_CSW_ADDRINC)) {
         // Use manual TAR incrementation (slower).
         for (i = 0; i < count; i++) {
             loc = addr + i * 4;
-            // Measure transfer speed.
-            gettimeofday(&tstop, NULL);
-            tdeltam = fabsf((tstop.tv_sec - tstart.tv_sec) * 1000 + (tstop.tv_usec - tstart.tv_usec) / 1000);
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                       "LIBSWD_I: libswd_memap_write_int() writing address 0x%08X (speed %fKB/s)\r",
-                       loc, count * 4 / tdeltam);
-            fflush(0);
+
+            ESP_LOGI(TAG, 
+                       "libswd_memap_write_int() writing address 0x%08X",
+                       loc);
+            
             // Pass address to TAR register.
             res = libswd_ap_write(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_MEMAP_TAR_ADDR, &loc);
             if (res < 0) goto libswd_memap_write_int_error;
@@ -891,7 +857,6 @@ int libswd_memap_write_int(libswd_ctx_t *libswdctx, libswd_operation_t operation
             if (res < 0) goto libswd_memap_write_int_error;
             libswdctx->log.memap.drw = data[i];
         }
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO, "\n");
     } else {
         // Use TAR Auto Increment (faster).
         // TAR auto increment is only guaranteed to work on the bottom 10 bits
@@ -913,28 +878,23 @@ int libswd_memap_write_int(libswd_ctx_t *libswdctx, libswd_operation_t operation
                 libswdctx->log.memap.tar = loc;
             }
 
-            // Measure transfer speed.
-            gettimeofday(&tstop, NULL);
-            tdeltam = fabsf((tstop.tv_sec - tstart.tv_sec) * 1000 + (tstop.tv_usec - tstart.tv_usec) / 1000);
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                       "LIBSWD_I: libswd_memap_write_int() writing address 0x%08X (speed %fKB/s)\r",
-                       loc, count * 4 / tdeltam);
-            fflush(0);
-
+            ESP_LOGI(TAG, 
+                       "libswd_memap_write_int() writing address 0x%08X",
+                       loc);
             // Write data to DRW register.
             libswdctx->log.memap.drw = data[i];
             res = libswd_ap_write(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_MEMAP_DRW_ADDR,
                                   &libswdctx->log.memap.drw);
             if (res < 0) goto libswd_memap_write_int_error;
         }
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO, "\n");
+        
     }
 
     return LIBSWD_OK;
 
     libswd_memap_write_int_error:
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-               "\nLIBSWD_E: libswd_memap_write_int(): %s\n",
+    ESP_LOGE(TAG, 
+               "libswd_memap_write_int(): %s",
                libswd_error_string(res));
     return res;
 }
@@ -951,8 +911,8 @@ int libswd_memap_write_int(libswd_ctx_t *libswdctx, libswd_operation_t operation
 int libswd_memap_write_int_csw(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, int *data,
                                int csw)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_write_int_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p, csw=0x%X)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_write_int_csw(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p, csw=0x%X)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void **) data, csw);
 
@@ -990,8 +950,8 @@ int libswd_memap_write_int_csw(libswd_ctx_t *libswdctx, libswd_operation_t opera
     return LIBSWD_OK;
 
     libswd_memap_write_int_csw_error:
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-               "\nLIBSWD_E: libswd_memap_write_int_csw(): %s\n",
+    ESP_LOGE(TAG, 
+               "libswd_memap_write_int_csw(): %s",
                libswd_error_string(res));
     return res;
 }
@@ -1006,8 +966,8 @@ int libswd_memap_write_int_csw(libswd_ctx_t *libswdctx, libswd_operation_t opera
  */
 int libswd_memap_write_int_32(libswd_ctx_t *libswdctx, libswd_operation_t operation, int addr, int count, int *data)
 {
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: Entering libswd_memap_write_int_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...\n",
+    ESP_LOGD(TAG, 
+               "Entering libswd_memap_write_int_32(*libswdctx=%p, operation=%s, addr=0x%08X, count=0x%08X, **data=%p)...",
                (void *) libswdctx, libswd_operation_string(operation),
                addr, count, (void **) data);
 

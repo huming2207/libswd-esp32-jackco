@@ -139,12 +139,12 @@ int libswd_bin8_bitswap(unsigned char *buffer, unsigned int bitcount)
     if (bitcount > 8) return LIBSWD_ERROR_PARAM;
     unsigned char bit, result = 0; //res must be unsigned for proper shifting result
 #ifdef __SWDDEBUG__
-    printf("|LIBSWD_DEBUG: libswd_bin8_bitswap(%02X, %d);\n", *buffer, bitcount);
+    printf("|LIBSWD_DEBUG: libswd_bin8_bitswap(%02X, %d);", *buffer, bitcount);
 #endif
     for (bit = 0; bit < bitcount; bit++) {
         result = (result << 1) | (((*buffer >> bit) & 1) ? 1 : 0);
 #ifdef __SWDDEBUG__
-        printf("|LIBSWD_DEBUG: libswd_bin8_bitswap: in=%02X out=%02X bit=%d\n", *buffer, result, bit);
+        printf("|LIBSWD_DEBUG: libswd_bin8_bitswap: in=%02X out=%02X bit=%d", *buffer, result, bit);
 #endif
     }
     *buffer = result;
@@ -165,12 +165,12 @@ int libswd_bin32_bitswap(unsigned int *buffer, unsigned int bitcount)
     if (bitcount > 32) return LIBSWD_ERROR_PARAM;
     unsigned int bit, result = 0; //res must be unsigned for proper shifting result
 #ifdef __SWDDEBUG__
-    printf("|LIBSWD_DEBUG: libswd_bin32_bitswap(%08X, %d);\n", *buffer, bitcount);
+    printf("|LIBSWD_DEBUG: libswd_bin32_bitswap(%08X, %d);", *buffer, bitcount);
 #endif
     for (bit = 0; bit < bitcount; bit++) {
         result = (result << 1) | (((*buffer >> bit) & 1) ? 1 : 0);
 #ifdef __SWDDEBUG__
-        printf("|LIBSWD_DEBUG: libswd_bin32_bitswap: in=%08X out=%08X bit=%d\n", *buffer, result, bit);
+        printf("|LIBSWD_DEBUG: libswd_bin32_bitswap: in=%08X out=%08X bit=%d", *buffer, result, bit);
 #endif
     }
     *buffer = result;

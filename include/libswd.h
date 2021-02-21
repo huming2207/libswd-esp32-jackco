@@ -78,9 +78,9 @@
  *   //libswdctx->driver->device=...
  *   res=libswd_dap_detect(libswdctx, LIBSWD_OPERATION_EXECUTE, &idcode);
  *   if (res<0){
- *    printf("ERROR: %s\n", libswd_error_string(res));
+ *    printf("ERROR: %s", libswd_error_string(res));
  *    return res;
- *   } else printf("IDCODE: 0x%X (%s)\n", *idcode, libswd_bin32_string(idcode));
+ *   } else printf("IDCODE: 0x%X (%s)", *idcode, libswd_bin32_string(idcode));
  *   libswd_deinit(libswdctx);
  *   return 0;
  *  }

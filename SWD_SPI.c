@@ -50,7 +50,7 @@
 inline void spi_transmit(spi_device_handle_t spi_dev, spi_transaction_t *spi_trans)
 {
     if (ESP_OK != spi_device_transmit(spi_dev, spi_trans)) {
-        ESP_LOGD(TAG, " - FAIL\n");
+        ESP_LOGD(TAG, " - FAIL");
     }
 }
 
@@ -76,7 +76,7 @@ extern int libswd_drv_mosi_8(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd, char *d
 
     ESP_LOGD(TAG, "%02x", spi_trans.tx_data[0]);
 
-    ESP_LOGD(TAG, ";\n");
+    ESP_LOGD(TAG, ";");
     return LIBSWD_OK;
 }
 
@@ -104,7 +104,7 @@ extern int libswd_drv_mosi_32(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd, int *d
     ESP_LOGD(TAG, "%02x %02x %02x %02x", spi_trans.tx_data[0], spi_trans.tx_data[1], spi_trans.tx_data[2],
              spi_trans.tx_data[3]);
 
-    ESP_LOGD(TAG, ";\n");
+    ESP_LOGD(TAG, ";");
     return LIBSWD_OK;
 }
 
@@ -129,7 +129,7 @@ extern int libswd_drv_miso_8(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd, char *d
 
     (*data) = spi_trans.rx_data[0];
 
-    ESP_LOGD(TAG, ";\n");
+    ESP_LOGD(TAG, ";");
     return LIBSWD_OK;
 }
 
@@ -177,7 +177,7 @@ extern int libswd_drv_mosi_trn(libswd_ctx_t *libswdctx, int clks)
     spi_transmit(*spi_dev, &spi_trans);
     direction_set(DIRECTION_GPIO, DIRECTION_MISO);
 
-    ESP_LOGD(TAG, ";\n");
+    ESP_LOGD(TAG, ";");
     return LIBSWD_OK;
 }
 
@@ -201,62 +201,61 @@ extern int libswd_drv_miso_trn(libswd_ctx_t *libswdctx, int clks)
     spi_transmit(*spi_dev, &spi_trans);
     direction_set(DIRECTION_GPIO, DIRECTION_MISO);
 
-    ESP_LOGD(TAG, ";\n");
+    ESP_LOGD(TAG, ";");
 
     return LIBSWD_OK;
 }
 
 extern int libswd_log(libswd_ctx_t *libswdctx, libswd_loglevel_t loglevel, char *msg, ...)
 {
-    va_list args;
-    va_start (args, msg);
-
-    char buffer[256];
-    int length = 0;
-    length = vsnprintf(buffer, 255, msg, args);
-    buffer[length] = '\0';
-
-    switch (loglevel) {
-        case LIBSWD_LOGLEVEL_DEBUG: {
-            ESP_LOGD(TAG, "%s", buffer);
-            break;
-        }
-
-        case LIBSWD_LOGLEVEL_MIN: {
-            break;
-        }
-
-        case LIBSWD_LOGLEVEL_NORMAL: {
-            ESP_LOGI(TAG, "%s", buffer);
-            break;
-        }
-
-        case LIBSWD_LOGLEVEL_ERROR: {
-            ESP_LOGE(TAG, "%s", buffer);
-            break;
-        }
-
-        case LIBSWD_LOGLEVEL_WARNING: {
-            ESP_LOGW(TAG, "%s", buffer);
-            break;
-        }
-
-        case LIBSWD_LOGLEVEL_INFO: {
-            ESP_LOGI(TAG, "%s", buffer);
-            break;
-        }
-
-        case LIBSWD_LOGLEVEL_PAYLOAD: {
-            ESP_LOGD(TAG, "%s", buffer);
-            break;
-        }
-
-        default: {
-            break;
-        }
-    }
-
-    va_end (args);
+//    va_list args;
+//    va_start (args, msg);
+//
+//    char buffer[256];
+//    int length = 0;
+//    length = vsnprintf(buffer, 255, msg, args);
+//
+//    va_end (args);
+//
+//    switch (loglevel) {
+//        case LIBSWD_LOGLEVEL_DEBUG: {
+//            ESP_LOGD(TAG, "%s", buffer);
+//            break;
+//        }
+//
+//        case LIBSWD_LOGLEVEL_MIN: {
+//            break;
+//        }
+//
+//        case LIBSWD_LOGLEVEL_NORMAL: {
+//            ESP_LOGI(TAG, "%s", buffer);
+//            break;
+//        }
+//
+//        case LIBSWD_LOGLEVEL_ERROR: {
+//            ESP_LOGE(TAG, "%s", buffer);
+//            break;
+//        }
+//
+//        case LIBSWD_LOGLEVEL_WARNING: {
+//            ESP_LOGW(TAG, "%s", buffer);
+//            break;
+//        }
+//
+//        case LIBSWD_LOGLEVEL_INFO: {
+//            ESP_LOGI(TAG, "%s", buffer);
+//            break;
+//        }
+//
+//        case LIBSWD_LOGLEVEL_PAYLOAD: {
+//            ESP_LOGD(TAG, "%s", buffer);
+//            break;
+//        }
+//
+//        default: {
+//            break;
+//        }
+//    }
 
     return LIBSWD_OK;
 }

@@ -35,6 +35,9 @@
 /** \file libswd_drv.c */
 
 #include <libswd.h>
+#include <esp_log.h>
+
+#define TAG "libswd_drv"
 
 /*******************************************************************************
  * \defgroup libswd_drv SWD Bus and Interface Driver Transfer Functions that
@@ -74,8 +77,8 @@ int libswd_drv_transmit(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd)
     switch (cmd->cmdtype) {
         case LIBSWD_CMDTYPE_MOSI:
         case LIBSWD_CMDTYPE_MISO:
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                       "LIBSWD_W: libswd_drv_transmit(): This command does not contain payload.");
+            ESP_LOGW(TAG, 
+                       "libswd_drv_transmit(): This command does not contain payload.");
             break;
 
         case LIBSWD_CMDTYPE_MOSI_CONTROL:
@@ -113,7 +116,7 @@ int libswd_drv_transmit(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd)
             if (res >= 0) {
                 libswdctx->log.write.request = cmd->request;
                 // Log human-readable request fields for easier transmission debug.
-                libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG, "LIBSWD_D: Sending Request: %s\n", \
+                ESP_LOGD(TAG,  "Sending Request: %s", \
      libswd_request_string(libswdctx, cmd->request));
             }
             break;
@@ -168,8 +171,8 @@ int libswd_drv_transmit(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd)
             return LIBSWD_ERROR_BADCMDTYPE;
     }
 
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_PAYLOAD,
-               "LIBSWD_P: libswd_drv_transmit(libswdctx=@%p, cmd=@%p) bits=%-2d cmdtype=%-12s returns=%-3d payload=0x%08x (%s)\n",
+    ESP_LOGD(TAG, 
+               "libswd_drv_transmit(libswdctx=@%p, cmd=@%p) bits=%-2d cmdtype=%-12s returns=%-3d payload=0x%08x (%s)",
                libswdctx, cmd, cmd->bits, libswd_cmd_string_cmdtype(cmd), res,
                (cmd->bits > 8) ? cmd->data32 : cmd->data8,
                (cmd->bits <= 8) ? libswd_bin8_string(&cmd->data8) : libswd_bin32_string(&cmd->data32));
@@ -188,20 +191,20 @@ int libswd_drv_transmit(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd)
                 return res;
                 // For other ACK codes produce a warning and remember the code.
             case LIBSWD_ACK_FAULT_VAL:
-                libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                           "LIBSWD_W: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): LIBSWD_ACK_FAULT detected!\n",
+                ESP_LOGW(TAG, 
+                           "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): LIBSWD_ACK_FAULT detected!",
                            (void *) libswdctx, (void *) cmd);
                 errcode = LIBSWD_ERROR_ACK_FAULT;
                 break;
             case LIBSWD_ACK_WAIT_VAL:
-                libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-                           "LIBSWD_D: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): LIBSWD_ACK_WAIT detectd!\n",
+                ESP_LOGD(TAG, 
+                           "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): LIBSWD_ACK_WAIT detectd!",
                            (void *) libswdctx, (void *) cmd);
                 errcode = LIBSWD_ERROR_ACK_WAIT;
                 break;
             default:
-                libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                           "LIBSWD_W: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): UnknownACK/ProtocolErrorSequence! Target Powered Off?\n",
+                ESP_LOGW(TAG, 
+                           "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): UnknownACK/ProtocolErrorSequence! Target Powered Off?",
                            (void *) libswdctx, (void *) cmd);
                 errcode = LIBSWD_ERROR_ACKUNKNOWN;
         }
@@ -209,16 +212,16 @@ int libswd_drv_transmit(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd)
         // The reason for clearing out the queue is to preserve synchronization with Target.
         // As data phase is required in some situations and data are already enqueued use data pointers not to crash applications that rely on that poiters...
         if (!libswdctx->config.autofixerrors) {
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-                       "LIBSWD_D: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): ACK!=OK, clearing cmdq tail to preserve synchronization...\n",
+            ESP_LOGD(TAG, 
+                       "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): ACK!=OK, clearing cmdq tail to preserve synchronization...",
                        (void *) libswdctx, (void *) cmd);
             // Save DATA and PARITY queue elements for ACK={WAIT,FAULT} as they may be referenced by application.
             if (errcode == LIBSWD_ERROR_ACK_WAIT || errcode == LIBSWD_ERROR_ACK_FAULT)
                 if (cmd->next) if (cmd->next->next) cmd = cmd->next->next;
             // Now free the queue tail.
             if (libswd_cmdq_free_tail(libswdctx, cmd) < 0) {
-                libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                           "LIBSWD_W: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Cannot free cmdq tail in ACK error handling routine, Protocol Error Sequence imminent...\n",
+                ESP_LOGW(TAG, 
+                           "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Cannot free cmdq tail in ACK error handling routine, Protocol Error Sequence imminent...",
                            (void *) libswdctx, (void *) cmd);
                 return LIBSWD_ERROR_QUEUENOTFREE;
             }
@@ -226,27 +229,27 @@ int libswd_drv_transmit(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd)
             // If ACK={WAIT,FAULT} then append data phase and again flush the queue to maintain sync.
             // MOSI_TRN + 33 zero data cycles should be universal for STICKYORUN={0,1} ???
             if (errcode == LIBSWD_ERROR_ACK_WAIT || errcode == LIBSWD_ERROR_ACK_FAULT) {
-                libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-                           "LIBSWD_D: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Performing data phase after ACK={WAIT,FAULT}...\n",
+                ESP_LOGD(TAG, 
+                           "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Performing data phase after ACK={WAIT,FAULT}...",
                            (void *) libswdctx, (void *) cmd);
                 int data = 0;
                 char parity = 0;
                 res = libswd_bus_write_data_p(libswdctx, LIBSWD_OPERATION_EXECUTE, &data, &parity);
                 if (res < 0) {
-                    libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                               "LIBSWD_W: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Cannot perform data phase after ACK=WAIT/FAIL, Protocol Error Sequence imminent...\n",
+                    ESP_LOGW(TAG, 
+                               "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Cannot perform data phase after ACK=WAIT/FAIL, Protocol Error Sequence imminent...",
                                (void *) libswdctx, (void *) cmd);
                 }
                 // Caller now should read CTRL/STAT and clear STICKY Error Flags at this point.
             }
         } else {
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-                       "LIBSWD_D: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): libswdctx->config.autofixerrors is set, applying error handling...\n",
+            ESP_LOGD(TAG, 
+                       "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): libswdctx->config.autofixerrors is set, applying error handling...",
                        (void *) libswdctx, (void *) cmd);
             res = libswd_error_handle(libswdctx);
             if (res < 0) {
-                libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                           "libswd_drv_transmit(libswdctx=@%p, @%p): error handling failed, %s\n", (void *) libswdctx,
+                ESP_LOGE(TAG, 
+                           "libswd_drv_transmit(libswdctx=@%p, @%p): error handling failed, %s", (void *) libswdctx,
                            (void *) cmd, libswd_error_string(res));
                 return res;
             }
@@ -265,22 +268,22 @@ int libswd_drv_transmit(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd)
             char testparity;
             // Calculate parity based on data value or give warning it cannot be performed.
             if (libswd_bin32_parity_even(&cmd->prev->misodata, &testparity) < 0)
-                libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                           "LIBSWD_W: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Cannot perform parity check (calculation error).\n",
+                ESP_LOGW(TAG, 
+                           "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Cannot perform parity check (calculation error).",
                            (void *) libswdctx, (void *) cmd);
             // Verify calculated data parity with value received from target.
             if (cmd->parity != testparity) {
                 // Give error message.
-                libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                           "LIBSWD_W: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Parity mismatch detected (%s/%d)!\n",
+                ESP_LOGW(TAG, 
+                           "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Parity mismatch detected (%s/%d)!",
                            (void *) libswdctx, (void *) cmd, libswd_bin32_string(&cmd->prev->misodata), cmd->parity);
                 // Clean the cmdq tail (as it contains invalid operations).
-                libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                           "LIBSWD_W: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Bad PARITY, clearing cmdq tail to preserve synchronization...\n",
+                ESP_LOGW(TAG, 
+                           "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Bad PARITY, clearing cmdq tail to preserve synchronization...",
                            (void *) libswdctx, (void *) cmd);
                 if (libswd_cmdq_free_tail(libswdctx, cmd) < 0) {
-                    libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                               "LIBSWD_W: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Cannot free cmdq tail in PARITY error hanlig routine!\n",
+                    ESP_LOGW(TAG, 
+                               "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Cannot free cmdq tail in PARITY error hanlig routine!",
                                (void *) libswdctx, (void *) cmd);
                     return LIBSWD_ERROR_QUEUENOTFREE;
                 }
@@ -290,8 +293,8 @@ int libswd_drv_transmit(libswd_ctx_t *libswdctx, libswd_cmd_t *cmd)
         } else {
             // If data element was not found then parity cannot be calculated.
             // Give warning about that but does not return an error, as queue might be cleaned just before.
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                       "LIBSWD_W: libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Cannot perform parity check (data missing).\n",
+            ESP_LOGW(TAG, 
+                       "libswd_drv_transmit(libswdctx=@%p, cmd=@%p): Cannot perform parity check (data missing).",
                        (void *) libswdctx, (void *) cmd);
             return res;
         }

@@ -35,6 +35,9 @@
 /** \file libswd_error.c */
 
 #include <libswd.h>
+#include <esp_log.h>
+
+#define TAG "libswd_error"
 
 /*******************************************************************************
  * \defgroup libswd_error Error handling and information routines.
@@ -151,14 +154,14 @@ int libswd_error_handle(libswd_ctx_t *libswdctx)
     // Verify if libswdctx->cmdq contains last executed element, correct if necessary.
     exectail = libswd_cmdq_find_exectail(libswdctx->cmdq);
     if (exectail == NULL) {
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                   "LIBSWD_E: libswd_error_handle(libswdctx=@%p): Cannot find last executed element on the queue!\n",
+        ESP_LOGE(TAG, 
+                   "libswd_error_handle(libswdctx=@%p): Cannot find last executed element on the queue!",
                    (void *) libswdctx);
         return LIBSWD_ERROR_QUEUE;
     }
     if (exectail != libswdctx->cmdq) {
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_INFO,
-                   "LIBSWD_I: libswd_error_handle(libswdctx=@%p): Correcting libswdctx->cmdq to match last executed element...\n",
+        ESP_LOGI(TAG, 
+                   "libswd_error_handle(libswdctx=@%p): Correcting libswdctx->cmdq to match last executed element...",
                    (void *) libswdctx);
         libswdctx->cmdq = exectail;
     }
@@ -172,7 +175,7 @@ int libswd_error_handle(libswd_ctx_t *libswdctx)
     }
 
     if (retval < 0) {
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING, "LIBSWD_W: libswd_error_handle(@%p) failed! on cmdq=@%p",
+        ESP_LOGW(TAG,  "libswd_error_handle(@%p) failed! on cmdq=@%p",
                    (void *) libswdctx, (void *) libswdctx->cmdq);
     }
     return retval;
@@ -183,8 +186,8 @@ int libswd_error_handle_ack(libswd_ctx_t *libswdctx)
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
     // Make sure we are working on the ACK cmdq element.
     if (libswdctx->cmdq->cmdtype != LIBSWD_CMDTYPE_MISO_ACK) {
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                   "LIBSWD_E: libswd_error_handle_ack(@%p):libswdctx->cmdq does not point to ACK!", (void *) libswdctx);
+        ESP_LOGE(TAG, 
+                   "libswd_error_handle_ack(@%p):libswdctx->cmdq does not point to ACK!", (void *) libswdctx);
         return LIBSWD_ERROR_UNHANDLED; //do we want to handle this kind of error here?
     }
 
@@ -192,8 +195,8 @@ int libswd_error_handle_ack(libswd_ctx_t *libswdctx)
         case LIBSWD_ACK_OK_VAL:
             // Uhm, there was no error.
             // Should we return OK or search for next ACK recursively?
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                       "LIBSWD_W: libswd_error_handle_ack(libswdctx=@%p): ACK=OK, handling wrong element?\n",
+            ESP_LOGW(TAG, 
+                       "libswd_error_handle_ack(libswdctx=@%p): ACK=OK, handling wrong element?",
                        (void *) libswdctx);
             return LIBSWD_OK;
         case LIBSWD_ACK_WAIT_VAL:
@@ -212,15 +215,15 @@ int libswd_error_handle_ack_wait(libswd_ctx_t *libswdctx)
     if (libswdctx == NULL) return LIBSWD_ERROR_NULLCONTEXT;
     // Make sure we are working on the ACK cmdq element.
     if (libswdctx->cmdq->cmdtype != LIBSWD_CMDTYPE_MISO_ACK) {
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                   "LIBSWD_W: libswd_error_handle_ack_wait(libswdctx=@%p):libswdctx->cmdq does not point to ACK!",
+        ESP_LOGW(TAG, 
+                   "libswd_error_handle_ack_wait(libswdctx=@%p):libswdctx->cmdq does not point to ACK!",
                    (void *) libswdctx);
         return LIBSWD_ERROR_UNHANDLED; //do we want to handle this kind of error here?
     }
     // Make sure the ACK contains WAIT response.
     if (libswdctx->cmdq->ack != LIBSWD_ACK_WAIT_VAL) {
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_WARNING,
-                   "LIBSWD_W: libswd_error_handle_ack_wait(libswdctx=@%p):libswdctx->cmdq->ack does not contain WAIT response!",
+        ESP_LOGW(TAG, 
+                   "libswd_error_handle_ack_wait(libswdctx=@%p):libswdctx->cmdq->ack does not contain WAIT response!",
                    (void *) libswdctx);
         return LIBSWD_ERROR_ACKMISMATCH;
     }
@@ -245,8 +248,8 @@ int libswd_error_handle_ack_wait(libswd_ctx_t *libswdctx)
     if (libswdctx->cmdq->errors == NULL) goto libswd_error_handle_ack_wait_end;
     libswdctx->cmdq = libswdctx->cmdq->errors; // From now, this becomes out main cmdq for use with standard functions.
     libswdctx->stats.cmdqlen = 1; //Do not forget about memory management
-    libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-               "LIBSWD_D: libswd_error_handle_ack_wait(libswdctx=@%p): Performing data phase after ACK={WAIT,FAULT}...\n",
+    ESP_LOGD(TAG, 
+               "libswd_error_handle_ack_wait(libswdctx=@%p): Performing data phase after ACK={WAIT,FAULT}...",
                (void *) libswdctx);
     int data = 0;
     retval = libswd_bus_write_data_p(libswdctx, LIBSWD_OPERATION_EXECUTE, &data, &parity);
@@ -275,8 +278,8 @@ int libswd_error_handle_ack_wait(libswd_ctx_t *libswdctx)
 
 
         if (*ctrlstat & LIBSWD_DP_CTRLSTAT_READOK) {
-            libswd_log(libswdctx, LIBSWD_LOGLEVEL_DEBUG,
-                       "=========================GOT RESPONSE===========================\n\n\n");
+            ESP_LOGD(TAG, 
+                       "=========================GOT RESPONSE===========================");
             retval = libswd_dp_read(libswdctx, LIBSWD_OPERATION_EXECUTE, LIBSWD_DP_RDBUFF_ADDR, &rdata);
             if (retval < 0) goto libswd_error_handle_ack_wait_end;
             break;
@@ -306,8 +309,8 @@ int libswd_error_handle_ack_wait(libswd_ctx_t *libswdctx)
         libswdctx->cmdq->done = 1;
         return LIBSWD_OK;
     } else
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                   "LIBSWD_E: UNSUPPORTED COMMAND SEQUENCE ON CMDQ (NOT ACK->RDATA->PARITY)\n");
+        ESP_LOGE(TAG, 
+                   "UNSUPPORTED COMMAND SEQUENCE ON CMDQ (NOT ACK->RDATA->PARITY)");
 
 
     // At this point we should have the read result from RDBUFF ready for MEM-AP read fix.
@@ -317,8 +320,8 @@ int libswd_error_handle_ack_wait(libswd_ctx_t *libswdctx)
     libswd_error_handle_ack_wait_end:
     // Exit ACK WAIT handling routine, verify retval before return.
     if (retval < 0 || retrycnt == 0) {
-        libswd_log(libswdctx, LIBSWD_LOGLEVEL_ERROR,
-                   "LIBSWD_E: libswd_error_handle_ack_wait(libswdctx=@%p) ejecting: %s\n", (void *) libswdctx,
+        ESP_LOGE(TAG, 
+                   "libswd_error_handle_ack_wait(libswdctx=@%p) ejecting: %s", (void *) libswdctx,
                    libswd_error_string(retval));
     }
 
@@ -327,7 +330,7 @@ int libswd_error_handle_ack_wait(libswd_ctx_t *libswdctx)
     libswdctx->cmdq->errors = NULL; //Delete a pointer which is probably no more valid
     libswdctx->stats.cmdqlen = mastercmdqlen; //Do not forget about original cmdqlen
     while (1) {
-        printf("ACK WAIT HANDLER\n");
+        printf("ACK WAIT HANDLER");
         usleep(1000);
     } //TODO this is unacceptable!
     return retval;
